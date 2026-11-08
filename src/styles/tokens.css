@@ -1,0 +1,70 @@
+/* ==========================================================================
+   ROSHANA — Prototype Design Tokens (Proposed, Unapproved v0.1)
+   Reference: ROSHANA_AGENT_ARENA_WIREFRAME_BRIEF_FA.md (Section 4)
+   ========================================================================== */
+
+:root {
+  /* Primary Brand Palette */
+  --color-brand-50: #f3f8fa;
+  --color-brand-100: #e7f2f5;
+  --color-brand-200: #c8dfe6;
+  --color-brand-600: #2f7891;
+  --color-brand-700: #245b73;
+  --color-brand-800: #1b4557;
+
+  /* Accent & Achievement Palette */
+  --color-accent-100: #fef5e7;
+  --color-accent-200: #fbe2b8;
+  --color-accent-500: #f2a541;
+  --color-accent-700: #995f11;
+
+  /* Semantic Status Palette */
+  --color-success-100: #e8f4ee;
+  --color-success-600: #27845d;
+
+  --color-warning-100: #fcf3e3;
+  --color-warning-600: #b97719;
+
+  --color-danger-100: #fbeceb;
+  --color-danger-600: #b94a48;
+
+  /* Neutral & Surface Palette */
+  --color-ink-900: #202b33;
+  --color-ink-600: #5e6b73;
+  --color-ink-400: #87959e;
+  --color-surface: #ffffff;
+  --color-canvas: #f5f7f8;
+  --color-border: #dce4e8;
+
+  /* Typography Scale */
+  --font-family-primary: 'Abar', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-latin: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-size-page-title: 1.75rem;   /* 28px (within 24–30px) */
+  --font-size-section-title: 1.25rem;/* 20px (within 18–22px) */
+  --font-size-card-title: 1.0625rem; /* 17px (within 16–18px) */
+  --font-size-body: 0.9375rem;       /* 15px (within 14–16px) */
+  --font-size-caption: 0.8125rem;    /* 13px (within 12–13px) */
+
+  /* Spacing System (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Layout Dimensions */
+  --layout-max-width: 1440px;
+  --sidebar-width: 256px;
+  --topbar-height: 68px;
+  --preview-bar-height: 40px;
+
+  /* Radii & Subtle Elevation */
+  --radius-control: 8px;
+  --radius-card: 14px;
+  --radius-card-lg: 16px;
+  --shadow-floating: 0 10px 28px -6px rgba(32, 43, 51, 0.14), 0 2px 6px -1px rgba(32, 43, 51, 0.06);
+  --shadow-subtle: 0 1px 2px rgba(32, 43, 51, 0.04);
+}

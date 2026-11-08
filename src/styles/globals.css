@@ -1,0 +1,129 @@
+@import './tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Local Abar Font Declarations (No External CDN Dependency) */
+@font-face {
+  font-family: 'Abar';
+  src:
+    url('/fonts/AbarMidFaNum-Regular.woff2') format('woff2'),
+    url('/fonts/AbarLow-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Abar';
+  src: url('/fonts/AbarLow-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Abar';
+  src: url('/fonts/AbarLow-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Abar';
+  src:
+    url('/fonts/AbarMidFaNum-SemiBold.woff2') format('woff2'),
+    url('/fonts/AbarLow-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Abar';
+  src: url('/fonts/AbarLow-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-family-primary);
+    background-color: var(--color-canvas);
+    color: var(--color-ink-900);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  html[dir='rtl'] body {
+    line-height: 1.8;
+    letter-spacing: 0;
+    word-break: normal;
+    overflow-wrap: break-word;
+  }
+
+  html[dir='ltr'] body {
+    font-family: var(--font-family-latin);
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, strong, th {
+    font-weight: 600;
+  }
+
+  /* Accessible visible keyboard focus */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+  }
+}
+
+/* Typography helper classes matching Roshana Design System */
+.typo-page-title {
+  font-size: var(--font-size-page-title);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-ink-900);
+}
+
+.typo-section-title {
+  font-size: var(--font-size-section-title);
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-ink-900);
+}
+
+.typo-card-title {
+  font-size: var(--font-size-card-title);
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--color-ink-900);
+}
+
+.typo-body {
+  font-size: var(--font-size-body);
+  font-weight: 400;
+  line-height: 1.8;
+}
+
+.typo-caption {
+  font-size: var(--font-size-caption);
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--color-ink-600);
+}
+
+/* Technical codes, usernames, IDs, and math formulas that should stay LTR */
+.ltr-token {
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-family: var(--font-family-latin);
+}
+
+/* Flip directional icons cleanly in LTR/RTL when needed */
+html[dir='ltr'] .rtl-flip {
+  transform: scaleX(-1);
+}
