@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRight,
+  BookOpen,
   ChevronDown,
   ChevronUp,
   FolderTree,
@@ -31,13 +32,13 @@ import {
 import { TOPICS } from '../../data/mockData';
 import { SkillStatus } from '../../data/types';
 import { bi, fmtNum } from '../../utils/format';
+import { getTopicTheme } from '../../utils/theme';
 
 export const StudentSkillLibraryPage: React.FC = () => {
   const { lang, skills, pageSimState, setPageSimState } = usePrototype();
   const navigate = useNavigate();
   const ArrowIcon = lang === 'fa' ? ArrowLeft : ArrowRight;
 
-  // UX Comparison Switcher (Section 6.3 requirement: test both inline tree & separate Topic Detail page)
   const [browsePattern, setBrowsePattern] = useState<'tree' | 'topic_cards'>('tree');
   const [searchQuery, setSearchQuery] = useState('');
   const [gradeFilter, setGradeFilter] = useState<string>('6');
@@ -91,7 +92,10 @@ export const StudentSkillLibraryPage: React.FC = () => {
           sk.titleEn.toLowerCase().includes(q) ||
           sk.descriptionFa.toLowerCase().includes(q) ||
           sk.code.toLowerCase().includes(q) ||
-          Boolean(top && (top.titleFa.toLowerCase().includes(q) || top.titleEn.toLowerCase().includes(q)))
+          Boolean(
+            top &&
+              (top.titleFa.toLowerCase().includes(q) || top.titleEn.toLowerCase().includes(q))
+          )
         );
       }
       return true;
@@ -108,6 +112,7 @@ export const StudentSkillLibraryPage: React.FC = () => {
     <AppShell roleOverride="student">
       <PageHeader
         lang={lang}
+        icon={<BookOpen className="w-6 h-6" />}
         breadcrumbs={[
           { label: bi(lang, 'خانه', 'Home'), to: '/student' },
           { label: bi(lang, 'کتابخانه مهارت‌ها', 'Skill Library') },
@@ -115,8 +120,8 @@ export const StudentSkillLibraryPage: React.FC = () => {
         title={bi(lang, 'کتابخانه مهارت‌ها', 'Skill Library')}
         subtitle={bi(
           lang,
-          'مباحث ریاضی را مرور کن و هر مهارتی را که دوست داری برای تمرین مستقل انتخاب کن.',
-          'Browse Mathematics topics and select any skill to start independent practice.'
+          'مباحث رنگ‌بندی‌شده ریاضی را مرور کن و هر مهارتی را که دوست داری برای تمرین انتخاب کن.',
+          'Explore color-coded Mathematics topics and select any skill for independent practice.'
         )}
         badge={
           <DemoBadge
@@ -145,56 +150,57 @@ export const StudentSkillLibraryPage: React.FC = () => {
 
       {pageSimState !== 'loading' && pageSimState !== 'error' && (
         <div className="space-y-5">
-          {/* Subject Roadmap Strip (MVP = Mathematics; Science & Language = Later Phase) */}
-          <div className="flex flex-wrap items-center justify-between gap-3 bg-surface p-3.5 rounded-card border border-border">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold text-ink-600 me-1">
-                {bi(lang, 'درس:', 'Subject:')}
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-control bg-brand-700 text-white text-xs font-semibold">
-                {bi(lang, 'ریاضی (فعال در MVP)', 'Mathematics (Active MVP)')}
-              </span>
-              <span
-                title={bi(lang, 'برنامه‌ریزی‌شده برای فازهای بعدی', 'Planned for future phases')}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-control bg-canvas text-ink-400 border border-border text-xs cursor-not-allowed"
-              >
-                <Lock className="w-3 h-3" aria-hidden="true" />
-                {bi(lang, 'علوم تجربی (فاز بعدی)', 'Science (Later Phase)')}
-              </span>
-              <span
-                title={bi(lang, 'برنامه‌ریزی‌شده برای فازهای بعدی', 'Planned for future phases')}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-control bg-canvas text-ink-400 border border-border text-xs cursor-not-allowed"
-              >
-                <Lock className="w-3 h-3" aria-hidden="true" />
-                {bi(lang, 'ادبیات و زبان (فاز بعدی)', 'Language (Later Phase)')}
-              </span>
-            </div>
+          {/* Subject Roadmap + UX Browse Pattern Switcher */}
+          <Card padding="sm" surfaceTone="sky">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-bold text-brand-800 me-1">
+                  {bi(lang, 'درس:', 'Subject:')}
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-brand-800 text-white text-xs font-bold shadow-xs">
+                  {bi(lang, 'ریاضی (فعال در MVP)', 'Mathematics (Active MVP)')}
+                </span>
+                <span
+                  title={bi(lang, 'برنامه‌ریزی‌شده برای فازهای بعدی', 'Planned for future phases')}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface/80 text-ink-400 border border-border text-xs cursor-not-allowed"
+                >
+                  <Lock className="w-3 h-3" aria-hidden="true" />
+                  {bi(lang, 'علوم تجربی (فاز بعدی)', 'Science (Later Phase)')}
+                </span>
+                <span
+                  title={bi(lang, 'برنامه‌ریزی‌شده برای فازهای بعدی', 'Planned for future phases')}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface/80 text-ink-400 border border-border text-xs cursor-not-allowed"
+                >
+                  <Lock className="w-3 h-3" aria-hidden="true" />
+                  {bi(lang, 'ادبیات و زبان (فاز بعدی)', 'Language (Later Phase)')}
+                </span>
+              </div>
 
-            {/* UX Pattern Comparison Switcher (Section 6.3!) */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-ink-600 hidden sm:inline">
-                {bi(lang, 'الگوی مرور UX:', 'UX Browse Mode:')}
-              </span>
-              <Tabs
-                activeId={browsePattern}
-                onChange={(id) => setBrowsePattern(id as 'tree' | 'topic_cards')}
-                tabs={[
-                  {
-                    id: 'tree',
-                    label: bi(lang, '۱. مرور درختی در صفحه', '1. Inline Topic Tree'),
-                  },
-                  {
-                    id: 'topic_cards',
-                    label: bi(lang, '۲. صفحه مستقل مبحث', '2. Topic Detail Cards'),
-                  },
-                ]}
-              />
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-brand-800 hidden sm:inline">
+                  {bi(lang, 'الگوی مرور:', 'Browse Mode:')}
+                </span>
+                <Tabs
+                  activeId={browsePattern}
+                  onChange={(id) => setBrowsePattern(id as 'tree' | 'topic_cards')}
+                  tabs={[
+                    {
+                      id: 'tree',
+                      label: bi(lang, '۱. مرور درختی در صفحه', '1. Inline Topic Tree'),
+                    },
+                    {
+                      id: 'topic_cards',
+                      label: bi(lang, '۲. کارت‌های مبحث', '2. Topic Cards'),
+                    },
+                  ]}
+                />
+              </div>
             </div>
-          </div>
+          </Card>
 
           {/* Filter & Search Bar */}
-          <Card padding="sm">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+          <Card padding="md" surfaceTone="white" accentTop="turquoise">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-end">
               <div className="md:col-span-6">
                 <SearchInput
                   id="student-skill-search"
@@ -203,8 +209,8 @@ export const StudentSkillLibraryPage: React.FC = () => {
                   onChange={setSearchQuery}
                   placeholder={bi(
                     lang,
-                    'جست‌وجوی نام مهارت، مبحث یا کد (مثلاً: کسر، مساحت، M6-FR)...',
-                    'Search skill title, topic, or code (e.g., Fractions, Area, M6-FR)...'
+                    'نام مهارت، مبحث یا کد (مثلاً: کسر، مساحت، M6-FR)...',
+                    'Skill title, topic, or code (e.g., Fractions, Area, M6-FR)...'
                   )}
                 />
               </div>
@@ -240,7 +246,7 @@ export const StudentSkillLibraryPage: React.FC = () => {
             </div>
           </Card>
 
-          {/* Empty Search / No Results Filter State */}
+          {/* Empty State */}
           {filteredTopics.length === 0 ? (
             <EmptyState
               variant="search"
@@ -256,7 +262,7 @@ export const StudentSkillLibraryPage: React.FC = () => {
               )}
               action={
                 <Button
-                  variant="secondary"
+                  variant="cta"
                   onClick={resetFilters}
                   icon={<RotateCcw className="w-4 h-4" />}
                 >
@@ -265,10 +271,10 @@ export const StudentSkillLibraryPage: React.FC = () => {
               }
             />
           ) : browsePattern === 'tree' ? (
-            /*UX Pattern 1: Expandable Topic & Optional Subtopic Tree inside Skill Library*/
+            /* UX Pattern 1: Color-coded Expandable Topic & Optional Subtopic Tree */
             <div className="space-y-4">
-              <div className="flex items-center gap-2 text-xs text-ink-600 px-1">
-                <FolderTree className="w-4 h-4 text-brand-700" aria-hidden="true" />
+              <div className="flex items-center gap-2 text-xs font-medium text-ink-600 px-1">
+                <FolderTree className="w-4 h-4 text-turquoise-600 shrink-0" aria-hidden="true" />
                 <span>
                   {bi(
                     lang,
@@ -285,27 +291,39 @@ export const StudentSkillLibraryPage: React.FC = () => {
                   topicSkills.reduce((acc, s) => acc + s.demoProgress, 0) /
                     Math.max(1, topicSkills.length)
                 );
+                const theme = getTopicTheme(topic.id);
 
                 return (
-                  <Card key={topic.id} padding="none" className="overflow-hidden">
-                    {/* Accordion Header */}
+                  <Card
+                    key={topic.id}
+                    padding="none"
+                    accentTop={theme.accentTop}
+                    className="overflow-hidden"
+                  >
+                    {/* Topic Accordion Header */}
                     <div className="p-4 sm:p-5 bg-surface flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <button
                         type="button"
                         onClick={() => toggleTopic(topic.id)}
                         aria-expanded={isOpen}
-                        className="flex items-start sm:items-center gap-3.5 text-start flex-1"
+                        className="flex items-start sm:items-center gap-3.5 text-start flex-1 min-w-0"
                       >
-                        <TopicIllustration kind={topic.illustrationKey} size={54} />
-                        <div className="space-y-1">
+                        <TopicIllustration kind={topic.illustrationKey} size={56} />
+                        <div className="space-y-1 min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
                             <h2 className="typo-section-title text-lg">
                               {bi(lang, topic.titleFa, topic.titleEn)}
                             </h2>
-                            <Badge tone="neutral">
-                              {fmtNum(topicSkills.length, lang)}{' '}
-                              {bi(lang, 'مهارت', 'skills')}
+                            <Badge tone={theme.badgeTone}>
+                              {fmtNum(topicSkills.length, lang)} {bi(lang, 'مهارت', 'skills')}
                             </Badge>
+                            <span className="text-xs font-semibold text-ink-600">
+                              {bi(
+                                lang,
+                                `پایه ${fmtNum(topic.grade, 'fa')}`,
+                                `Grade ${topic.grade}`
+                              )}
+                            </span>
                           </div>
                           <p className="typo-caption line-clamp-2">
                             {bi(lang, topic.descriptionFa, topic.descriptionEn)}
@@ -314,16 +332,17 @@ export const StudentSkillLibraryPage: React.FC = () => {
                       </button>
 
                       <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
-                        <div className="w-32 hidden md:block">
+                        <div className="w-36 hidden md:block">
                           <ProgressBar
                             value={avgProg}
                             lang={lang}
+                            tone={theme.progressTone}
                             label={bi(lang, 'میانگین نمونه', 'Demo Avg')}
                           />
                         </div>
                         <Link
                           to={`/student/topics/${topic.id}`}
-                          className="text-xs font-semibold text-brand-700 hover:underline px-2.5 py-1.5 rounded-control bg-brand-50 border border-brand-200 inline-flex items-center gap-1"
+                          className={`text-xs font-bold hover:underline px-3 py-1.5 rounded-full inline-flex items-center gap-1 ${theme.chipClass}`}
                         >
                           <span>{bi(lang, 'صفحه مبحث', 'Topic Page')}</span>
                           <ArrowIcon className="w-3.5 h-3.5" />
@@ -332,7 +351,7 @@ export const StudentSkillLibraryPage: React.FC = () => {
                           type="button"
                           onClick={() => toggleTopic(topic.id)}
                           aria-label={bi(lang, 'باز و بسته کردن مبحث', 'Toggle topic')}
-                          className="p-2 rounded-control border border-border hover:bg-canvas text-ink-900"
+                          className="p-2 rounded-control border border-border-strong bg-canvas hover:bg-turquoise-50 text-ink-900"
                         >
                           {isOpen ? (
                             <ChevronUp className="w-4 h-4" />
@@ -343,20 +362,23 @@ export const StudentSkillLibraryPage: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Accordion Body: Subtopics (ONLY if topic.subtopics exists!) OR direct Skills */}
+                    {/* Topic Accordion Body */}
                     {isOpen && (
-                      <div className="p-4 sm:p-5 bg-canvas/65 border-t border-border space-y-5">
+                      <div className="p-4 sm:p-5 bg-canvas/80 border-t border-border space-y-5">
                         {topic.subtopics && topic.subtopics.length > 0 ? (
                           topic.subtopics.map((sub) => {
                             const subSkills = topicSkills.filter((s) => s.subtopicId === sub.id);
-                            if (subSkills.length === 0) return null; // Never render empty subtopic level!
+                            if (subSkills.length === 0) return null;
                             return (
                               <div key={sub.id} className="space-y-3">
                                 <div className="flex items-center gap-2">
-                                  <span className="w-2 h-2 rounded-full bg-brand-600" />
-                                  <h3 className="text-sm font-semibold text-ink-900">
+                                  <span className="w-2.5 h-2.5 rounded-full bg-brand-700" />
+                                  <h3 className="text-sm font-bold text-brand-900">
                                     {bi(lang, sub.titleFa, sub.titleEn)}
                                   </h3>
+                                  <span className="text-xs text-ink-600">
+                                    ({fmtNum(subSkills.length, lang)})
+                                  </span>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                   {subSkills.map((sk) => (
@@ -367,7 +389,6 @@ export const StudentSkillLibraryPage: React.FC = () => {
                             );
                           })
                         ) : (
-                          /* Direct skills without inventing an artificial Subtopic wrapper */
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {topicSkills.map((sk) => (
                               <SkillCard key={sk.id} skill={sk} lang={lang} />
@@ -381,15 +402,15 @@ export const StudentSkillLibraryPage: React.FC = () => {
               })}
             </div>
           ) : (
-            /* UX Pattern 2: Dedicated Topic Cards leading to /student/topics/:topicId */
+            /* UX Pattern 2: Colorful Dedicated Topic Cards */
             <div className="space-y-4">
-              <div className="flex items-center gap-2 text-xs text-ink-600 px-1">
-                <LayoutGrid className="w-4 h-4 text-brand-700" aria-hidden="true" />
+              <div className="flex items-center gap-2 text-xs font-medium text-ink-600 px-1">
+                <LayoutGrid className="w-4 h-4 text-orange-500 shrink-0" aria-hidden="true" />
                 <span>
                   {bi(
                     lang,
-                    'الگوی مرور ۲: ابتدا مبحث کلی انتخاب می‌شود و مهارت‌های آن در «صفحه مستقل جزئیات مبحث» باز می‌شوند.',
-                    'Pattern 2: Select a Topic card to open its dedicated Topic Detail page.'
+                    'الگوی مرور ۲: ابتدا کارت مبحث را انتخاب کن تا مهارت‌های آن در «صفحه مستقل جزئیات مبحث» باز شوند.',
+                    'Pattern 2: Select a color-coded Topic card to open its dedicated Topic Detail page.'
                   )}
                 </span>
               </div>
@@ -401,18 +422,21 @@ export const StudentSkillLibraryPage: React.FC = () => {
                     topicSkills.reduce((acc, s) => acc + s.demoProgress, 0) /
                       Math.max(1, topicSkills.length)
                   );
+                  const theme = getTopicTheme(topic.id);
                   return (
                     <Card
                       key={topic.id}
                       padding="md"
-                      className="flex flex-col justify-between gap-4 hover:border-brand-600 transition-colors"
+                      surfaceTone={theme.surfaceTone}
+                      accentTop={theme.accentTop}
+                      interactive
+                      className="flex flex-col justify-between gap-4"
                     >
                       <div className="space-y-3">
                         <div className="flex items-start justify-between gap-3">
-                          <TopicIllustration kind={topic.illustrationKey} size={56} />
-                          <Badge tone="brand">
-                            {fmtNum(topicSkills.length, lang)}{' '}
-                            {bi(lang, 'مهارت', 'skills')}
+                          <TopicIllustration kind={topic.illustrationKey} size={58} />
+                          <Badge tone={theme.badgeTone}>
+                            {fmtNum(topicSkills.length, lang)} {bi(lang, 'مهارت', 'skills')}
                           </Badge>
                         </div>
                         <h2 className="typo-card-title text-lg">
@@ -423,11 +447,12 @@ export const StudentSkillLibraryPage: React.FC = () => {
                         </p>
                       </div>
 
-                      <div className="space-y-3 pt-3 border-t border-border">
+                      <div className="space-y-3 pt-3 border-t border-border/80">
                         <ProgressBar
                           value={avgProg}
                           lang={lang}
-                          label={bi(lang, 'پیشرفت در این مبحث (نمونه)', 'Topic Progress (Demo)')}
+                          tone={theme.progressTone}
+                          label={bi(lang, 'پیشرفت مبحث (نمونه)', 'Topic Progress (Demo)')}
                         />
                         <Button
                           variant="primary"

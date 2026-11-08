@@ -61,6 +61,7 @@ export const StudentStorePage: React.FC = () => {
     <AppShell roleOverride="student">
       <PageHeader
         lang={lang}
+        icon={<ShoppingBag className="w-6 h-6" />}
         breadcrumbs={[
           { label: bi(lang, 'خانه', 'Home'), to: '/student' },
           { label: bi(lang, 'فروشگاه آواتار', 'Rewards Store') },
@@ -68,16 +69,21 @@ export const StudentStorePage: React.FC = () => {
         title={bi(lang, 'فروشگاه جوایز آواتار (P2)', 'Avatar Rewards Store (P2)')}
         subtitle={bi(
           lang,
-          'شخصی‌سازی نماد انتزاعی پروفایل با سکه‌های حاصل از تمرین (بدون استفاده از تصاویر چهره واقعی کودکان).',
-          'Customize your abstract geometric profile emblem using practice coins.'
+          'شخصی‌سازی نماد هندسی پروفایل با سکه‌های حاصل از تمرین (بدون استفاده از تصویر چهره واقعی کودکان).',
+          'Customize your geometric profile emblem using practice coins.'
         )}
         badge={<DemoBadge lang={lang} />}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Live Avatar Preview Panel */}
-        <Card padding="lg" className="lg:col-span-4 space-y-4 text-center sticky top-24">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-accent-100 border border-accent-200 text-sm font-bold text-accent-700">
+        {/* Live Avatar Preview Stage */}
+        <Card
+          padding="lg"
+          surfaceTone="cream"
+          accentTop="accent"
+          className="lg:col-span-4 space-y-4 text-center lg:sticky lg:top-24"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent-500 text-ink-900 text-sm font-bold shadow-xs">
             <Coins className="w-4 h-4" aria-hidden="true" />
             <span>
               {bi(lang, 'موجودی فعلی:', 'Balance:')} {fmtNum(coins, lang)}{' '}
@@ -85,25 +91,27 @@ export const StudentStorePage: React.FC = () => {
             </span>
           </div>
 
-          <div className="py-4 flex flex-col items-center gap-3">
+          <div className="py-5 px-4 rounded-card bg-surface border border-accent-200 flex flex-col items-center gap-3">
             <AvatarSymbolGraphic
               symbol={previewItem.previewSymbol}
               bgColor={previewItem.previewColor}
-              size={108}
+              size={112}
             />
             <div>
-              <h2 className="typo-card-title">
+              <h2 className="typo-card-title text-lg">
                 {bi(lang, DEMO_STUDENT_PROFILE.nameFa, DEMO_STUDENT_PROFILE.nameEn)}
               </h2>
-              <p className="typo-caption">
-                {bi(lang, 'پیش‌نمایش:', 'Previewing:')}{' '}
-                <strong>{bi(lang, previewItem.titleFa, previewItem.titleEn)}</strong>
+              <p className="typo-caption mt-0.5">
+                {bi(lang, 'پیش‌نمایش نماد:', 'Previewing:')}{' '}
+                <strong className="text-brand-800">
+                  {bi(lang, previewItem.titleFa, previewItem.titleEn)}
+                </strong>
               </p>
             </div>
           </div>
 
-          <div className="p-3 rounded-control bg-canvas border border-border text-xs text-ink-600 text-start">
-            <label className="flex items-center gap-2 cursor-pointer font-medium text-ink-900">
+          <div className="p-3 rounded-control bg-surface border border-border text-xs text-ink-600 text-start">
+            <label className="flex items-center gap-2 cursor-pointer font-semibold text-ink-900">
               <input
                 type="checkbox"
                 checked={simulateTxError}
@@ -129,44 +137,55 @@ export const StudentStorePage: React.FC = () => {
           {storeItems.map((item) => {
             const insufficient = !item.owned && coins < item.priceCoins;
             return (
-              <Card key={item.id} padding="md" className="flex flex-col justify-between gap-4">
+              <Card
+                key={item.id}
+                padding="md"
+                surfaceTone={item.equipped ? 'mint' : item.owned ? 'sky' : 'white'}
+                accentTop={item.equipped ? 'success' : item.owned ? 'turquoise' : 'accent'}
+                interactive
+                className="flex flex-col justify-between gap-4"
+              >
                 <div className="flex items-start gap-3.5">
                   <AvatarSymbolGraphic
                     symbol={item.previewSymbol}
                     bgColor={item.previewColor}
-                    size={56}
+                    size={58}
                   />
-                  <div className="space-y-1 flex-1">
+                  <div className="space-y-1 flex-1 min-w-0">
                     <div className="flex flex-wrap items-center justify-between gap-1">
-                      <span className="typo-caption">{bi(lang, item.categoryFa, item.categoryEn)}</span>
+                      <span className="typo-caption font-semibold">
+                        {bi(lang, item.categoryFa, item.categoryEn)}
+                      </span>
                       {item.owned ? (
-                        <Badge tone="success">
+                        <Badge tone={item.equipped ? 'success' : 'turquoise'}>
                           {item.equipped
                             ? bi(lang, 'فعال روی پروفایل', 'Equipped')
                             : bi(lang, 'دریافت‌شده', 'Owned')}
                         </Badge>
                       ) : (
-                        <Badge tone={insufficient ? 'warning' : 'accent'}>
+                        <Badge tone={insufficient ? 'coral' : 'accent'}>
                           {fmtNum(item.priceCoins, lang)} {bi(lang, 'سکه', 'coins')}
                         </Badge>
                       )}
                     </div>
                     <h3 className="typo-card-title">{bi(lang, item.titleFa, item.titleEn)}</h3>
-                    <p className="typo-caption">{bi(lang, item.descriptionFa, item.descriptionEn)}</p>
+                    <p className="typo-caption">
+                      {bi(lang, item.descriptionFa, item.descriptionEn)}
+                    </p>
                   </div>
                 </div>
 
                 {insufficient && (
-                  <div className="px-3 py-2 rounded-control bg-warning-100/60 border border-warning-600/30 text-xs text-warning-600 font-medium">
+                  <div className="px-3 py-2 rounded-control bg-coral-50 border border-coral-200 text-xs text-coral-700 font-semibold">
                     {lang === 'fa'
                       ? `سکه کافی نیست (${fmtNum(item.priceCoins - coins, 'fa')} سکه دیگر با تمرین مهارت‌ها لازم است).`
                       : `Insufficient coins (${item.priceCoins - coins} more coins needed from practice).`}
                   </div>
                 )}
 
-                <div className="flex items-center gap-2 pt-2 border-t border-border">
+                <div className="flex items-center gap-2 pt-2.5 border-t border-border">
                   <Button
-                    variant="ghost"
+                    variant="secondary"
                     size="sm"
                     onClick={() => setPreviewItem(item)}
                     icon={<Eye className="w-4 h-4" />}
@@ -176,7 +195,7 @@ export const StudentStorePage: React.FC = () => {
 
                   {item.owned ? (
                     <Button
-                      variant={item.equipped ? 'secondary' : 'primary'}
+                      variant={item.equipped ? 'secondary' : 'turquoise'}
                       size="sm"
                       disabled={item.equipped}
                       className="flex-1"
@@ -197,7 +216,7 @@ export const StudentStorePage: React.FC = () => {
                     </Button>
                   ) : (
                     <Button
-                      variant="primary"
+                      variant="cta"
                       size="sm"
                       disabled={insufficient}
                       className="flex-1"
@@ -227,7 +246,7 @@ export const StudentStorePage: React.FC = () => {
             <Button variant="secondary" onClick={() => setConfirmTarget(null)}>
               {bi(lang, 'انصراف', 'Cancel')}
             </Button>
-            <Button variant="primary" onClick={handleConfirmPurchase}>
+            <Button variant="cta" onClick={handleConfirmPurchase}>
               {bi(lang, 'تأیید و کسر سکه', 'Confirm Purchase')}
             </Button>
           </>
@@ -235,11 +254,11 @@ export const StudentStorePage: React.FC = () => {
       >
         {confirmTarget && (
           <div className="space-y-4">
-            <div className="flex items-center gap-4 p-3.5 rounded-card bg-canvas border border-border">
+            <div className="flex items-center gap-4 p-3.5 rounded-card bg-surface-cream border border-accent-200">
               <AvatarSymbolGraphic
                 symbol={confirmTarget.previewSymbol}
                 bgColor={confirmTarget.previewColor}
-                size={56}
+                size={58}
               />
               <div>
                 <h4 className="typo-card-title">
@@ -261,7 +280,7 @@ export const StudentStorePage: React.FC = () => {
             {txErrorText && (
               <div
                 role="alert"
-                className="p-3.5 rounded-control bg-danger-100 border border-danger-600/40 text-danger-600 text-xs sm:text-sm flex items-start gap-2"
+                className="p-3.5 rounded-control bg-coral-100 border border-coral-200 text-coral-700 text-xs sm:text-sm font-semibold flex items-start gap-2"
               >
                 <AlertCircle className="w-5 h-5 shrink-0" />
                 <span>{txErrorText}</span>

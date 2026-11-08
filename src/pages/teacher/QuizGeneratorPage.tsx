@@ -22,6 +22,7 @@ import {
 } from '../../components/ui/Primitives';
 import { QUESTION_BANK, TOPICS } from '../../data/mockData';
 import { bi, fmtNum } from '../../utils/format';
+import { getTopicTheme } from '../../utils/theme';
 
 export const QuizGeneratorPage: React.FC = () => {
   const {
@@ -87,6 +88,7 @@ export const QuizGeneratorPage: React.FC = () => {
     <AppShell roleOverride="teacher">
       <PageHeader
         lang={lang}
+        icon={<FileQuestion className="w-6 h-6" />}
         breadcrumbs={[
           { label: bi(lang, 'خانه معلم', 'Teacher Home'), to: '/teacher' },
           { label: bi(lang, 'آزمون‌ساز', 'Quiz Generator') },
@@ -110,17 +112,17 @@ export const QuizGeneratorPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Configuration Column */}
         <div className="lg:col-span-5 space-y-4">
-          <Card padding="md" className="space-y-4">
-            <div className="flex items-center justify-between gap-2 pb-2 border-b border-border">
+          <Card padding="md" surfaceTone="lavender" accentTop="lavender" className="space-y-4">
+            <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-lavender-200">
               <h2 className="typo-card-title flex items-center gap-2">
-                <Sliders className="w-4 h-4 text-brand-700" />
+                <Sliders className="w-4 h-4 text-lavender-700" />
                 <span>{bi(lang, 'پیکربندی آزمون', 'Quiz Configuration')}</span>
               </h2>
-              <Badge tone="accent">{bi(lang, 'تنظیمات نمایشی', 'Demo Settings')}</Badge>
+              <Badge tone="lavender">{bi(lang, 'بانک سؤال استاندارد', 'Question Bank')}</Badge>
             </div>
 
             <div>
-              <label htmlFor="quiz-title-input" className="block text-xs font-semibold text-ink-600 mb-1">
+              <label htmlFor="quiz-title-input" className="block text-xs font-bold text-ink-800 mb-1">
                 {bi(lang, 'عنوان آزمون برای کلاس فعال', 'Quiz Title')}
               </label>
               <input
@@ -128,27 +130,28 @@ export const QuizGeneratorPage: React.FC = () => {
                 type="text"
                 value={quizTitle}
                 onChange={(e) => setQuizTitle(e.target.value)}
-                className="w-full min-h-[42px] px-3 py-2 bg-surface border border-border rounded-control text-sm"
+                className="w-full min-h-[44px] px-3 py-2 bg-surface border border-border-strong rounded-control text-sm font-medium"
               />
             </div>
 
             <div>
-              <span className="block text-xs font-semibold text-ink-600 mb-2">
+              <span className="block text-xs font-bold text-ink-800 mb-2">
                 {bi(lang, 'انتخاب مهارت‌ها از بانک سؤال (ریاضی ششم)', 'Select Skills from Bank')}
               </span>
-              <div className="space-y-2 max-h-56 overflow-y-auto p-2 rounded-control bg-canvas border border-border">
+              <div className="space-y-2 max-h-56 overflow-y-auto p-2.5 rounded-card bg-surface border border-border">
                 {skills
                   .filter((s) => s.grade === 6)
                   .map((sk) => {
                     const checked = selectedSkillIds.includes(sk.id);
                     const top = TOPICS.find((t) => t.id === sk.topicId);
+                    const theme = getTopicTheme(sk.topicId);
                     return (
                       <label
                         key={sk.id}
-                        className={`p-2.5 rounded-control border text-xs flex items-start gap-2.5 cursor-pointer ${
+                        className={`p-2.5 rounded-control border text-xs flex items-start gap-2.5 cursor-pointer transition-colors ${
                           checked
-                            ? 'bg-brand-100 border-brand-700 text-brand-700 font-semibold'
-                            : 'bg-surface border-border text-ink-900'
+                            ? 'bg-turquoise-50 border-turquoise-500 text-brand-900 font-bold'
+                            : 'bg-canvas/60 border-border text-ink-900'
                         }`}
                       >
                         <input
@@ -166,7 +169,7 @@ export const QuizGeneratorPage: React.FC = () => {
                         <div>
                           <div>{bi(lang, sk.titleFa, sk.titleEn)}</div>
                           {top && (
-                            <span className="text-[11px] text-ink-600 font-normal">
+                            <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${theme.chipClass}`}>
                               {bi(lang, top.titleFa, top.titleEn)}
                             </span>
                           )}
@@ -202,8 +205,8 @@ export const QuizGeneratorPage: React.FC = () => {
               />
             </div>
 
-            <div className="p-3 rounded-control bg-canvas border border-border text-xs text-ink-600 flex items-start gap-2">
-              <Lock className="w-4 h-4 text-brand-700 shrink-0 mt-0.5" />
+            <div className="p-3 rounded-control bg-surface border border-lavender-200 text-xs text-ink-600 flex items-start gap-2">
+              <Lock className="w-4 h-4 text-lavender-700 shrink-0 mt-0.5" />
               <span>
                 {bi(
                   lang,
@@ -214,7 +217,7 @@ export const QuizGeneratorPage: React.FC = () => {
             </div>
 
             <Button
-              variant="primary"
+              variant="turquoise"
               className="w-full"
               disabled={selectedSkillIds.length === 0}
               onClick={() => {
@@ -228,12 +231,12 @@ export const QuizGeneratorPage: React.FC = () => {
               }}
               icon={<RefreshCw className="w-4 h-4" />}
             >
-              {bi(lang, 'تولید / جایگزینی پیش‌نمایش آزمون', 'Generate Quiz Preview')}
+              {bi(lang, 'چینش مجدد پیش‌نمایش از بانک سؤال', 'Shuffle Preview from Bank')}
             </Button>
           </Card>
 
           {/* Saved / Published Quizzes List */}
-          <Card padding="md" className="space-y-3">
+          <Card padding="md" surfaceTone="sky" className="space-y-3">
             <h3 className="typo-card-title">
               {bi(lang, 'آزمون‌های ثبت‌شده کلاس', 'Saved & Published Quizzes')}
             </h3>
@@ -241,10 +244,10 @@ export const QuizGeneratorPage: React.FC = () => {
               {quizzes.map((qz) => (
                 <div
                   key={qz.id}
-                  className="p-3 rounded-control bg-canvas border border-border flex items-center justify-between gap-2 text-xs"
+                  className="p-3 rounded-control bg-surface border border-border flex items-center justify-between gap-2 text-xs"
                 >
                   <div>
-                    <div className="font-semibold text-ink-900">
+                    <div className="font-bold text-ink-900">
                       {bi(lang, qz.titleFa, qz.titleEn)}
                     </div>
                     <span className="text-ink-600">
@@ -252,7 +255,7 @@ export const QuizGeneratorPage: React.FC = () => {
                       {fmtNum(qz.questionIds.length, lang)} {bi(lang, 'سؤال', 'questions')}
                     </span>
                   </div>
-                  <Badge tone={qz.status === 'published' ? 'success' : 'neutral'}>
+                  <Badge tone={qz.status === 'published' ? 'success' : 'accent'}>
                     {qz.status === 'published'
                       ? bi(lang, 'منتشرشده', 'Published')
                       : bi(lang, 'پیش‌نویس', 'Draft')}
@@ -266,6 +269,7 @@ export const QuizGeneratorPage: React.FC = () => {
         {/* Generated Preview Column */}
         <div className="lg:col-span-7 space-y-4">
           <SectionHeader
+            accentColor="orange"
             title={bi(
               lang,
               `پیش‌نمایش سؤال‌های انتخاب‌شده برای «${activeClass.nameFa}»`,
@@ -287,7 +291,7 @@ export const QuizGeneratorPage: React.FC = () => {
                   {bi(lang, 'ذخیره پیش‌نویس', 'Save Draft')}
                 </Button>
                 <Button
-                  variant="primary"
+                  variant="cta"
                   size="sm"
                   onClick={() => handleSaveOrPublish('published')}
                   icon={<Send className="w-4 h-4 rtl-flip" />}
@@ -301,18 +305,25 @@ export const QuizGeneratorPage: React.FC = () => {
           {previewGenerated &&
             generatedQuestions.map((q, idx) => {
               const sk = skills.find((s) => s.id === q.skillId);
+              const theme = getTopicTheme(sk?.topicId);
               return (
-                <Card key={q.id} padding="md" className="space-y-3">
+                <Card
+                  key={q.id}
+                  padding="md"
+                  accentTop={theme.accentTop}
+                  className="space-y-3.5"
+                >
                   <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-                    <span className="font-bold text-brand-700 inline-flex items-center gap-1.5">
-                      <FileQuestion className="w-4 h-4" />
-                      {bi(lang, `سؤال ${fmtNum(idx + 1, 'fa')}`, `Question ${idx + 1}`)}
-                      {sk && ` • ${bi(lang, sk.titleFa, sk.titleEn)}`}
+                    <span className="font-bold text-brand-900 inline-flex items-center gap-1.5">
+                      <span className="w-6 h-6 rounded-full bg-turquoise-100 text-brand-900 inline-flex items-center justify-center font-bold">
+                        {fmtNum(idx + 1, lang)}
+                      </span>
+                      {sk && <span>{bi(lang, sk.titleFa, sk.titleEn)}</span>}
                     </span>
-                    <Badge tone="neutral">{q.difficulty}</Badge>
+                    <Badge tone={theme.badgeTone}>{q.difficulty}</Badge>
                   </div>
 
-                  <p className="text-sm sm:text-base font-semibold text-ink-900">
+                  <p className="text-sm sm:text-base font-bold text-ink-900 leading-relaxed">
                     {bi(lang, q.promptFa, q.promptEn)}
                   </p>
 
@@ -323,10 +334,12 @@ export const QuizGeneratorPage: React.FC = () => {
                     heightCm={q.visualMeta?.heightCm}
                   />
 
-                  <div className="p-2.5 rounded-control bg-success-100/55 border border-success-600/30 text-xs text-ink-900 flex items-center gap-2">
+                  <div className="p-3 rounded-control bg-surface-mint border border-success-200 text-xs text-ink-900 flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-success-600 shrink-0" />
                     <span>
-                      <strong>{bi(lang, 'کلید پاسخ بانک سؤال: ', 'Answer key: ')}</strong>
+                      <strong className="text-success-700">
+                        {bi(lang, 'کلید پاسخ بانک سؤال: ', 'Answer key: ')}
+                      </strong>
                       {bi(lang, q.correctDisplayFa, q.correctDisplayEn)}
                     </span>
                   </div>

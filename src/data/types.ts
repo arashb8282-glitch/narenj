@@ -60,6 +60,7 @@ export interface Skill {
   lastPracticedEn?: string;
   attentionNoteFa?: string;
   attentionNoteEn?: string;
+  teacherAssigned?: boolean;
 }
 
 export interface Subtopic {

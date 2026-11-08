@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
+  AlertTriangle,
   ArrowLeft,
   ArrowRight,
-  Award,
   BookOpen,
   CheckCircle2,
   Coins,
@@ -11,10 +11,16 @@ import {
   Flame,
   PlayCircle,
   Sparkles,
+  Target,
+  Trophy,
 } from 'lucide-react';
 import { usePrototype } from '../../app/PrototypeContext';
 import { AppShell } from '../../components/shared/AppShell';
-import { StudentHeroIllustration, TopicIllustration } from '../../components/shared/Illustrations';
+import {
+  BadgeGraphic,
+  StudentHeroIllustration,
+  TopicIllustration,
+} from '../../components/shared/Illustrations';
 import { AssignmentCard } from '../../components/student/AssignmentCard';
 import {
   Badge,
@@ -35,6 +41,7 @@ import {
 } from '../../data/mockData';
 import { PageSimState } from '../../data/types';
 import { bi, fmtNum } from '../../utils/format';
+import { getTopicTheme } from '../../utils/theme';
 
 export const StudentLandingPage: React.FC = () => {
   const {
@@ -50,7 +57,6 @@ export const StudentLandingPage: React.FC = () => {
   const navigate = useNavigate();
   const ArrowIcon = lang === 'fa' ? ArrowLeft : ArrowRight;
 
-  // Quick inline state switcher pills for UX reviewers
   const statePills: { id: PageSimState; fa: string; en: string }[] = [
     { id: 'normal', fa: 'عادی (پیش‌فرض)', en: 'Default' },
     { id: 'multiple', fa: 'چند تکلیف', en: 'Multiple Tasks' },
@@ -62,7 +68,6 @@ export const StudentLandingPage: React.FC = () => {
     { id: 'error', fa: 'خطا', en: 'Error' },
   ];
 
-  // Determine assignments displayed based on simulated state
   const studentAssignments = assignments.filter(
     (a) => a.classId === 'cls-6a' && a.status !== 'cancelled' && a.status !== 'completed'
   );
@@ -76,25 +81,36 @@ export const StudentLandingPage: React.FC = () => {
     ? skills.find((s) => s.id === unfinishedSession.skillId)
     : null;
 
+  const attentionSkills = skills.filter((s) => s.status === 'needs_review');
+  const unlockedBadgesCount = badges.filter((b) => b.unlocked).length;
   const latestBadge = badges.filter((b) => b.unlocked)[2] ?? badges[0];
+
+  const weeklyPercent =
+    pageSimState === 'first_visit'
+      ? 0
+      : Math.round(
+          (DEMO_STUDENT_PROFILE.weeklyGoalCurrentMinutes /
+            DEMO_STUDENT_PROFILE.weeklyGoalTargetMinutes) *
+            100
+        );
 
   return (
     <AppShell roleOverride="student">
-      {/* UX Review State Strip */}
-      <div className="mb-5 p-2.5 rounded-card bg-surface border border-border flex flex-wrap items-center justify-between gap-2">
-        <span className="text-xs font-semibold text-ink-600 px-1">
-          {bi(lang, 'بررسی حالت‌های UX صفحه دانش‌آموز:', 'Inspect Student Landing UX States:')}
+      {/* UX Review State Strip — horizontally scrollable on mobile so it never bloats vertical height */}
+      <div className="mb-5 p-2.5 rounded-card bg-surface border border-border flex items-center justify-between gap-2 overflow-x-auto">
+        <span className="text-xs font-bold text-brand-800 px-1 whitespace-nowrap shrink-0">
+          {bi(lang, 'حالت UX صفحه:', 'UX State:')}
         </span>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex items-center gap-1.5 shrink-0">
           {statePills.map((sp) => (
             <button
               key={sp.id}
               type="button"
               onClick={() => setPageSimState(sp.id)}
-              className={`px-2.5 py-1 rounded-full text-xs font-semibold transition-colors ${
+              className={`px-2.5 py-1 rounded-full text-xs font-semibold transition-colors whitespace-nowrap ${
                 pageSimState === sp.id
-                  ? 'bg-brand-700 text-white'
-                  : 'bg-canvas text-ink-600 hover:text-ink-900 border border-border'
+                  ? 'bg-brand-800 text-white shadow-xs'
+                  : 'bg-canvas text-ink-600 hover:text-brand-900 border border-border'
               }`}
             >
               {bi(lang, sp.fa, sp.en)}
@@ -120,55 +136,115 @@ export const StudentLandingPage: React.FC = () => {
 
       {pageSimState !== 'loading' && pageSimState !== 'error' && (
         <div className="space-y-7">
-          {/* 1. Personalized Greeting + Educational Illustration */}
-          <section className="bg-surface rounded-cardLg border border-border p-5 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="space-y-2.5 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <DemoBadge lang={lang} />
-                <Badge tone="brand">
-                  {bi(
-                    lang,
-                    `${DEMO_STUDENT_PROFILE.gradeLabelFa} • ریاضی`,
-                    `${DEMO_STUDENT_PROFILE.gradeLabelEn} • Mathematics`
-                  )}
-                </Badge>
+          {/* 1. Energetic Personalized Hero Banner + 4-Question Student Snapshot */}
+          <section className="rounded-cardLg bg-gradient-to-br from-brand-900 via-brand-800 to-turquoise-700 text-white p-5 sm:p-7 shadow-card overflow-hidden relative">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="space-y-3.5 flex-1 min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-accent-500 text-ink-900 text-[11px] font-bold">
+                    {bi(lang, 'داده نمونه (DEMO DATA)', 'DEMO DATA')}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-white/15 border border-white/20 text-xs font-semibold text-turquoise-100">
+                    {bi(
+                      lang,
+                      `${DEMO_STUDENT_PROFILE.gradeLabelFa} • ریاضی`,
+                      `${DEMO_STUDENT_PROFILE.gradeLabelEn} • Mathematics`
+                    )}
+                  </span>
+                </div>
+
+                <h1 className="text-2xl sm:text-[1.85rem] font-bold text-white leading-tight">
+                  {pageSimState === 'first_visit'
+                    ? bi(lang, 'سلام آوا! به روشنا خوش آمدی', 'Welcome to Roshana, Ava!')
+                    : bi(
+                        lang,
+                        'سلام آوا! آماده‌ای امروز یک گام جلوتر بروی؟',
+                        'Hi Ava! Ready for your next learning step?'
+                      )}
+                </h1>
+
+                <p className="text-sm sm:text-base text-white/85 max-w-2xl leading-relaxed">
+                  {pageSimState === 'first_visit'
+                    ? bi(
+                        lang,
+                        'اینجا هر روز مشخص است چه مهارتی را تمرین کنی. از تکلیف معلم شروع کن یا خودت از کتابخانه مهارت‌ها یک مبحث انتخاب کن.',
+                        'Here you always know what to practice next—start from a teacher assignment or explore the Skill Library.'
+                      )
+                    : bi(
+                        lang,
+                        'اولویت اصلی امروزت در کارت نارنجی پایین مشخص شده است. هر زمان بخواهی می‌توانی تمرین را ذخیره کنی و بعداً ادامه دهی.',
+                        'Your #1 priority is highlighted right below. You can pause and resume safely at any question.'
+                      )}
+                </p>
+
+                {/* 4 Key Answers at a Glance: Next Action, Current Progress, Needs Attention, Achievements */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2">
+                  <div className="rounded-control bg-white/12 border border-white/15 px-3 py-2.5">
+                    <div className="flex items-center gap-1.5 text-[11px] text-orange-200 font-semibold">
+                      <Target className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+                      <span>{bi(lang, 'اقدام بعدی', 'Up Next')}</span>
+                    </div>
+                    <div className="text-sm font-bold text-white mt-0.5 truncate">
+                      {pageSimState === 'empty' || pageSimState === 'first_visit'
+                        ? bi(lang, 'انتخاب آزاد مهارت', 'Pick a Skill')
+                        : bi(
+                            lang,
+                            `${fmtNum(studentAssignments.length, 'fa')} تکلیف فعال`,
+                            `${studentAssignments.length} Active Task(s)`
+                          )}
+                    </div>
+                  </div>
+
+                  <div className="rounded-control bg-white/12 border border-white/15 px-3 py-2.5">
+                    <div className="flex items-center gap-1.5 text-[11px] text-success-100 font-semibold">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-success-500 shrink-0" />
+                      <span>{bi(lang, 'پیشرفت هفته', 'Weekly Goal')}</span>
+                    </div>
+                    <div className="text-sm font-bold text-white mt-0.5">
+                      {fmtNum(weeklyPercent, lang)}٪{' '}
+                      <span className="text-xs font-normal text-white/75">
+                        ({fmtNum(pageSimState === 'first_visit' ? 0 : DEMO_STUDENT_PROFILE.weeklyGoalCurrentMinutes, lang)} {bi(lang, 'دقیقه', 'm')})
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="rounded-control bg-white/12 border border-white/15 px-3 py-2.5">
+                    <div className="flex items-center gap-1.5 text-[11px] text-coral-100 font-semibold">
+                      <AlertTriangle className="w-3.5 h-3.5 text-coral-500 shrink-0" />
+                      <span>{bi(lang, 'نیازمند توجه', 'Needs Review')}</span>
+                    </div>
+                    <div className="text-sm font-bold text-white mt-0.5">
+                      {fmtNum(pageSimState === 'first_visit' ? 0 : attentionSkills.length, lang)}{' '}
+                      {bi(lang, 'مهارت', 'skill(s)')}
+                    </div>
+                  </div>
+
+                  <div className="rounded-control bg-white/12 border border-white/15 px-3 py-2.5">
+                    <div className="flex items-center gap-1.5 text-[11px] text-accent-200 font-semibold">
+                      <Trophy className="w-3.5 h-3.5 text-accent-500 shrink-0" />
+                      <span>{bi(lang, 'دستاوردها', 'Achievements')}</span>
+                    </div>
+                    <div className="text-sm font-bold text-white mt-0.5">
+                      {fmtNum(pageSimState === 'first_visit' ? 0 : unlockedBadgesCount, lang)}{' '}
+                      {bi(lang, 'مدال', 'badges')} •{' '}
+                      {fmtNum(pageSimState === 'first_visit' ? 0 : DEMO_STUDENT_PROFILE.streakDays, lang)}{' '}
+                      {bi(lang, 'روز', 'd')}
+                    </div>
+                  </div>
+                </div>
               </div>
-              <h1 className="typo-page-title">
-                {pageSimState === 'first_visit'
-                  ? bi(
-                      lang,
-                      'سلام آوا! به روشنا خوش آمدی',
-                      'Welcome to Roshana, Ava!'
-                    )
-                  : bi(
-                      lang,
-                      'سلام آوا! آماده‌ای یک گام جلوتر بروی؟',
-                      'Hi Ava! Ready for your next step today?'
-                    )}
-              </h1>
-              <p className="typo-body text-ink-600 max-w-2xl">
-                {pageSimState === 'first_visit'
-                  ? bi(
-                      lang,
-                      'اینجا هر روز مشخص است که چه مهارتی را تمرین کنی. می‌توانی از تکلیف معلم شروع کنی یا خودت از کتابخانه مهارت‌ها یک مبحث انتخاب کنی.',
-                      'Here you can always see what to practice next—start from a teacher assignment or explore the Skill Library.'
-                    )
-                  : bi(
-                      lang,
-                      'مهم‌ترین کار امروزت در کارت زیر مشخص شده است. هر زمان بخواهی می‌توانی تمرین را ذخیره کنی و بعداً ادامه دهی.',
-                      'Your top priority is highlighted right below. You can pause and resume safely at any question.'
-                    )}
-              </p>
-            </div>
-            <div className="w-56 sm:w-64 shrink-0">
-              <StudentHeroIllustration />
+
+              <div className="w-48 sm:w-60 shrink-0 hidden sm:block">
+                <StudentHeroIllustration />
+              </div>
             </div>
           </section>
 
-          {/* 2 & 3. Primary Next Assignment CTA */}
+          {/* 2. Primary Next Assignment CTA */}
           <section aria-labelledby="next-action-heading">
             <SectionHeader
-              title={bi(lang, 'تکلیف بعدی شما', 'Your Next Assignment')}
+              accentColor="orange"
+              title={bi(lang, 'گام اول امروز: تکلیف معلم', 'Step 1 Today: Teacher Assignment')}
               subtitle={bi(
                 lang,
                 'تعیین‌شده توسط معلم کلاس ششم الف (وضعیت‌های تکلیف پیشنهادی‌اند)',
@@ -177,7 +253,7 @@ export const StudentLandingPage: React.FC = () => {
               action={
                 <Link
                   to="/student/skills"
-                  className="text-sm font-semibold text-brand-700 hover:underline inline-flex items-center gap-1"
+                  className="text-sm font-bold text-brand-700 hover:text-brand-900 inline-flex items-center gap-1"
                 >
                   <span>{bi(lang, 'مرور همه مهارت‌ها', 'Browse Skill Library')}</span>
                   <ArrowIcon className="w-4 h-4" />
@@ -195,12 +271,12 @@ export const StudentLandingPage: React.FC = () => {
                 )}
                 description={bi(
                   lang,
-                  'فرصت خوبی است که یکی از مهارت‌های پیشنهادی یا مبحث دلخواهت را از کتابخانه مهارت‌ها انتخاب کنی.',
+                  'فرصت عالی برای انتخاب یکی از مهارت‌های پیشنهادی یا مبحث دلخواهت از کتابخانه مهارت‌هاست.',
                   'Great time to pick a recommended skill or explore a topic in the Skill Library.'
                 )}
                 action={
                   <Button
-                    variant="primary"
+                    variant="cta"
                     onClick={() => navigate('/student/skills')}
                     icon={<BookOpen className="w-4 h-4" />}
                   >
@@ -223,73 +299,119 @@ export const StudentLandingPage: React.FC = () => {
             )}
           </section>
 
-          {/* 4. Resume Unfinished Practice Session */}
-          {pageSimState !== 'first_visit' && unfinishedSession && unfinishedSkill && (
-            <section aria-label={bi(lang, 'ادامه تمرین نیمه‌تمام', 'Resume Unfinished Practice')}>
-              <Card padding="md" className="bg-brand-50/75 border-brand-200">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="flex items-start gap-3.5">
-                    <TopicIllustration kind="decimals" size={52} />
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <Badge tone="brand">
-                          {bi(lang, 'تمرین ذخیره‌شده نیمه‌تمام', 'Saved Unfinished Session')}
-                        </Badge>
-                        <span className="typo-caption">
-                          {bi(lang, unfinishedSession.savedAtFa, unfinishedSession.savedAtEn)}
-                        </span>
+          {/* 3. Unfinished Session + Skills Needing Attention Row */}
+          {pageSimState !== 'first_visit' && (unfinishedSkill || attentionSkills.length > 0) && (
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {unfinishedSession && unfinishedSkill && (
+                <Card padding="md" surfaceTone="sky" accentTop="turquoise">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 h-full">
+                    <div className="flex items-start gap-3.5">
+                      <TopicIllustration kind="decimals" size={52} />
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge tone="turquoise">
+                            {bi(lang, 'تمرین نیمه‌تمام ذخیره‌شده', 'Saved Unfinished Session')}
+                          </Badge>
+                          <span className="typo-caption">
+                            {bi(lang, unfinishedSession.savedAtFa, unfinishedSession.savedAtEn)}
+                          </span>
+                        </div>
+                        <h3 className="typo-card-title mt-1.5">
+                          {bi(lang, unfinishedSkill.titleFa, unfinishedSkill.titleEn)}
+                        </h3>
+                        <p className="typo-caption mt-0.5">
+                          {lang === 'fa'
+                            ? `ذخیره خودکار در سؤال ${fmtNum(unfinishedSession.questionIndex + 1, 'fa')} از ${fmtNum(unfinishedSession.totalQuestions, 'fa')}`
+                            : `Auto-saved at Question ${unfinishedSession.questionIndex + 1} of ${unfinishedSession.totalQuestions}`}
+                        </p>
                       </div>
-                      <h3 className="typo-card-title mt-1">
-                        {bi(lang, unfinishedSkill.titleFa, unfinishedSkill.titleEn)}
-                      </h3>
-                      <p className="typo-caption">
-                        {lang === 'fa'
-                          ? `ذخیره خودکار در سؤال ${fmtNum(unfinishedSession.questionIndex + 1, 'fa')} از ${fmtNum(unfinishedSession.totalQuestions, 'fa')}`
-                          : `Auto-saved at Question ${unfinishedSession.questionIndex + 1} of ${unfinishedSession.totalQuestions}`}
-                      </p>
                     </div>
+                    <Button
+                      variant="turquoise"
+                      size="sm"
+                      className="shrink-0"
+                      onClick={() =>
+                        navigate(
+                          `/student/practice/${unfinishedSkill.id}?q=${unfinishedSession.questionIndex}`
+                        )
+                      }
+                      icon={<PlayCircle className="w-4 h-4" />}
+                    >
+                      {lang === 'fa'
+                        ? `ادامه از سؤال ${fmtNum(unfinishedSession.questionIndex + 1, 'fa')}`
+                        : `Resume Q${unfinishedSession.questionIndex + 1}`}
+                    </Button>
                   </div>
-                  <Button
-                    variant="secondary"
-                    onClick={() =>
-                      navigate(
-                        `/student/practice/${unfinishedSkill.id}?q=${unfinishedSession.questionIndex}`
-                      )
-                    }
-                    icon={<PlayCircle className="w-4 h-4 text-brand-700" />}
-                  >
-                    {lang === 'fa'
-                      ? `ادامه از سؤال ${fmtNum(unfinishedSession.questionIndex + 1, 'fa')}`
-                      : `Resume from Q${unfinishedSession.questionIndex + 1}`}
-                  </Button>
-                </div>
-              </Card>
+                </Card>
+              )}
+
+              {attentionSkills[0] && (
+                <Card padding="md" surfaceTone="coral" accentTop="coral">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 h-full">
+                    <div className="flex items-start gap-3.5">
+                      <div className="w-[52px] h-[52px] rounded-card bg-coral-100 border border-coral-200 flex items-center justify-center text-coral-600 shrink-0">
+                        <AlertTriangle className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge tone="coral">
+                            {bi(lang, 'مهارت نیازمند مرور', 'Skill Needing Attention')}
+                          </Badge>
+                          <span className="ltr-token text-xs font-bold text-coral-700">
+                            {attentionSkills[0].code}
+                          </span>
+                        </div>
+                        <h3 className="typo-card-title mt-1.5">
+                          {bi(lang, attentionSkills[0].titleFa, attentionSkills[0].titleEn)}
+                        </h3>
+                        <p className="typo-caption mt-0.5">
+                          {bi(
+                            lang,
+                            attentionSkills[0].attentionNoteFa ?? 'مرور کوتاه ۵ دقیقه‌ای برای رفع اشتباه‌های رایج',
+                            attentionSkills[0].attentionNoteEn ?? 'Short 5-min review to clear up recent mistakes'
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="cta"
+                      size="sm"
+                      className="shrink-0"
+                      onClick={() => navigate(`/student/practice/${attentionSkills[0].id}`)}
+                      icon={<PlayCircle className="w-4 h-4" />}
+                    >
+                      {bi(lang, 'شروع مرور', 'Review Now')}
+                    </Button>
+                  </div>
+                </Card>
+              )}
             </section>
           )}
 
-          {/* 5. Recommended Skills with Explicit Reasons */}
+          {/* 4. Recommended Skills with Topic Color Coding & Explicit Reasons */}
           <section aria-labelledby="rec-heading">
             <SectionHeader
-              title={bi(lang, 'پیشنهادهای مهارتی برای تو', 'Recommended Skills for You')}
+              accentColor="lavender"
+              title={bi(lang, 'پیشنهادهای یادگیری مخصوص تو', 'Recommended Skills for You')}
               subtitle={bi(
                 lang,
-                'هر پیشنهاد همراه با دلیل آموزشی نمایش داده می‌شود (داده نمونه ثابت — بدون الگوریتم هوشمند مصوب)',
+                'هر پیشنهاد همراه با دلیل آموزشی مشخص نمایش داده می‌شود (داده نمونه ثابت — الگوریتم هوشمند هنوز مصوب نشده)',
                 'Each skill includes an explicit learning reason (fixed demo data — recommendation logic unapproved)'
               )}
               action={
                 <Link
                   to="/student/recommendations"
-                  className="text-sm font-semibold text-brand-700 hover:underline inline-flex items-center gap-1"
+                  className="text-sm font-bold text-lavender-700 hover:underline inline-flex items-center gap-1"
                 >
-                  <span>{bi(lang, 'مشاهده همه پیشنهادها', 'All Recommendations')}</span>
+                  <span>{bi(lang, 'همه پیشنهادها', 'All Recommendations')}</span>
                   <ArrowIcon className="w-4 h-4" />
                 </Link>
               }
             />
 
             {pageSimState === 'no_recommendations' || pageSimState === 'first_visit' ? (
-              <Card padding="md" className="text-center py-8">
-                <Compass className="w-8 h-8 text-brand-600 mx-auto mb-2" aria-hidden="true" />
+              <Card padding="md" surfaceTone="lavender" className="text-center py-8">
+                <Compass className="w-8 h-8 text-lavender-600 mx-auto mb-2" aria-hidden="true" />
                 <h3 className="typo-card-title">
                   {bi(
                     lang,
@@ -304,7 +426,7 @@ export const StudentLandingPage: React.FC = () => {
                     'Practice your first skill from the Skill Library to see tailored follow-up suggestions here.'
                   )}
                 </p>
-                <Button variant="secondary" size="sm" onClick={() => navigate('/student/skills')}>
+                <Button variant="primary" size="sm" onClick={() => navigate('/student/skills')}>
                   {bi(lang, 'رفتن به کتابخانه مهارت‌ها', 'Go to Skill Library')}
                 </Button>
               </Card>
@@ -314,31 +436,39 @@ export const StudentLandingPage: React.FC = () => {
                   const sk = skills.find((s) => s.id === rec.skillId);
                   const top = TOPICS.find((t) => t.id === rec.topicId);
                   if (!sk || !top) return null;
+                  const theme = getTopicTheme(top.id);
                   return (
-                    <Card key={rec.id} padding="md" className="flex flex-col justify-between gap-4">
+                    <Card
+                      key={rec.id}
+                      padding="md"
+                      surfaceTone={theme.surfaceTone}
+                      accentTop={theme.accentTop}
+                      interactive
+                      className="flex flex-col justify-between gap-4"
+                    >
                       <div className="space-y-2.5">
                         <div className="flex items-center justify-between gap-2">
-                          <span className="typo-caption font-semibold text-brand-700">
+                          <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${theme.chipClass}`}>
                             {bi(lang, top.titleFa, top.titleEn)}
                           </span>
                           <SkillStatusPill status={sk.status} lang={lang} />
                         </div>
                         <h3 className="typo-card-title">{bi(lang, sk.titleFa, sk.titleEn)}</h3>
-                        <div className="p-3 rounded-control bg-canvas border border-border text-xs text-ink-900 leading-relaxed">
-                          <strong className="text-brand-700 block mb-0.5">
+                        <div className="p-3 rounded-control bg-surface/90 border border-border text-xs text-ink-900 leading-relaxed">
+                          <strong className="text-brand-800 block mb-0.5">
                             {bi(lang, 'چرا این مهارت؟', 'Why this skill?')}
                           </strong>
                           {bi(lang, rec.reasonFa, rec.reasonEn)}
                         </div>
                       </div>
                       <Button
-                        variant="secondary"
+                        variant="primary"
                         size="sm"
                         className="w-full"
                         onClick={() => navigate(`/student/practice/${sk.id}?from=recommendation`)}
-                        icon={<Sparkles className="w-4 h-4 text-brand-700" />}
+                        icon={<Sparkles className="w-4 h-4" />}
                       >
-                        {bi(lang, 'شروع تمرین', 'Start Practice')}
+                        {bi(lang, 'شروع تمرین این مهارت', 'Start Skill Practice')}
                       </Button>
                     </Card>
                   );
@@ -347,10 +477,15 @@ export const StudentLandingPage: React.FC = () => {
             )}
           </section>
 
-          {/* 6 & 7. Progress Summary, Weekly Goal, Recent Activity, Latest Achievement + Secondary Coins */}
+          {/* 5. Progress Summary, Recent Activity, Latest Achievement + Subordinate Coin Card */}
           <section className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-            {/* Weekly Goal & Progress Summary */}
-            <Card padding="md" className="lg:col-span-5 flex flex-col justify-between gap-4">
+            {/* Weekly Goal & Progress Summary (Fresh Mint) */}
+            <Card
+              padding="md"
+              surfaceTone="mint"
+              accentTop="success"
+              className="lg:col-span-5 flex flex-col justify-between gap-4"
+            >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <h3 className="typo-card-title">
@@ -360,42 +495,35 @@ export const StudentLandingPage: React.FC = () => {
                 </div>
                 <p className="typo-caption mb-4">
                   {lang === 'fa'
-                    ? `${fmtNum(DEMO_STUDENT_PROFILE.weeklyGoalCurrentMinutes, 'fa')} از ${fmtNum(DEMO_STUDENT_PROFILE.weeklyGoalTargetMinutes, 'fa')} دقیقه هدف هفتگی تکمیل شده است.`
+                    ? `${fmtNum(DEMO_STUDENT_PROFILE.weeklyGoalCurrentMinutes, 'fa')} از ${fmtNum(DEMO_STUDENT_PROFILE.weeklyGoalTargetMinutes, 'fa')} دقیقه هدف هفتگی کامل شده است.`
                     : `${DEMO_STUDENT_PROFILE.weeklyGoalCurrentMinutes} of ${DEMO_STUDENT_PROFILE.weeklyGoalTargetMinutes} weekly minutes completed.`}
                 </p>
                 <ProgressBar
-                  value={
-                    pageSimState === 'first_visit'
-                      ? 0
-                      : Math.round(
-                          (DEMO_STUDENT_PROFILE.weeklyGoalCurrentMinutes /
-                            DEMO_STUDENT_PROFILE.weeklyGoalTargetMinutes) *
-                            100
-                        )
-                  }
+                  value={weeklyPercent}
                   lang={lang}
+                  size="md"
                   label={bi(lang, 'پیشرفت زمانی هفته', 'Weekly Time Goal')}
                   tone="success"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3 pt-3 border-t border-border">
-                <div className="p-3 rounded-control bg-canvas">
-                  <div className="flex items-center gap-1.5 text-xs text-ink-600">
-                    <Flame className="w-4 h-4 text-accent-700" aria-hidden="true" />
+              <div className="grid grid-cols-2 gap-3 pt-3 border-t border-success-200">
+                <div className="p-3 rounded-control bg-surface border border-border">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-orange-700">
+                    <Flame className="w-4 h-4 text-orange-500" aria-hidden="true" />
                     <span>{bi(lang, 'پیوستگی تمرین', 'Practice Streak')}</span>
                   </div>
                   <div className="text-lg font-bold text-ink-900 mt-1">
                     {pageSimState === 'first_visit'
                       ? fmtNum(0, lang)
                       : fmtNum(DEMO_STUDENT_PROFILE.streakDays, lang)}{' '}
-                    {bi(lang, 'روز', 'days')}
+                    {bi(lang, 'روز پیاپی', 'days')}
                   </div>
                 </div>
-                <div className="p-3 rounded-control bg-canvas">
-                  <div className="flex items-center gap-1.5 text-xs text-ink-600">
+                <div className="p-3 rounded-control bg-surface border border-border">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-success-700">
                     <CheckCircle2 className="w-4 h-4 text-success-600" aria-hidden="true" />
-                    <span>{bi(lang, 'مهارت‌های مسلط (نمونه)', 'Mastered (Demo)')}</span>
+                    <span>{bi(lang, 'مهارت‌های مسلط', 'Mastered (Demo)')}</span>
                   </div>
                   <div className="text-lg font-bold text-ink-900 mt-1">
                     {pageSimState === 'first_visit'
@@ -408,32 +536,40 @@ export const StudentLandingPage: React.FC = () => {
 
               <Link
                 to="/student/analytics"
-                className="text-sm font-semibold text-brand-700 hover:underline inline-flex items-center gap-1"
+                className="text-sm font-bold text-success-700 hover:underline inline-flex items-center gap-1"
               >
-                <span>{bi(lang, 'مشاهده گزارش کامل پیشرفت من', 'View Full Progress Report')}</span>
+                <span>{bi(lang, 'مشاهده کارنامه کامل پیشرفت', 'View Full Progress Report')}</span>
                 <ArrowIcon className="w-4 h-4" />
               </Link>
             </Card>
 
-            {/* Recent Activity */}
-            <Card padding="md" className="lg:col-span-4 flex flex-col justify-between gap-3">
+            {/* Recent Activity (Vibrant Sky) */}
+            <Card
+              padding="md"
+              surfaceTone="sky"
+              accentTop="turquoise"
+              className="lg:col-span-4 flex flex-col justify-between gap-3"
+            >
               <div>
                 <h3 className="typo-card-title mb-3">
-                  {bi(lang, 'فعالیت‌های اخیر', 'Recent Practice Activity')}
+                  {bi(lang, 'آخرین تمرین‌های انجام‌شده', 'Recent Practice Activity')}
                 </h3>
                 {pageSimState === 'first_visit' ? (
                   <p className="typo-caption py-6 text-center">
                     {bi(lang, 'هنوز فعالیتی ثبت نشده است.', 'No activity recorded yet.')}
                   </p>
                 ) : (
-                  <ul className="divide-y divide-border text-sm">
+                  <ul className="space-y-2.5 text-sm">
                     {skills
                       .filter((s) => s.lastPracticedFa)
                       .slice(0, 3)
                       .map((sk) => (
-                        <li key={sk.id} className="py-2.5 flex items-center justify-between gap-2">
+                        <li
+                          key={sk.id}
+                          className="p-2.5 rounded-control bg-surface border border-border flex items-center justify-between gap-2"
+                        >
                           <div className="min-w-0">
-                            <div className="font-semibold text-ink-900 truncate">
+                            <div className="font-bold text-ink-900 truncate">
                               {bi(lang, sk.titleFa, sk.titleEn)}
                             </div>
                             <div className="typo-caption text-xs">
@@ -441,7 +577,7 @@ export const StudentLandingPage: React.FC = () => {
                             </div>
                           </div>
                           <Button
-                            variant="ghost"
+                            variant="secondary"
                             size="sm"
                             onClick={() => navigate(`/student/practice/${sk.id}`)}
                           >
@@ -452,44 +588,56 @@ export const StudentLandingPage: React.FC = () => {
                   </ul>
                 )}
               </div>
+              <Link
+                to="/student/skills"
+                className="text-xs font-bold text-turquoise-700 hover:underline inline-flex items-center gap-1"
+              >
+                <span>{bi(lang, 'انتخاب مهارت جدید', 'Pick another skill')}</span>
+                <ArrowIcon className="w-3.5 h-3.5" />
+              </Link>
             </Card>
 
-            {/* Latest Achievement & Secondary Coin Balance */}
+            {/* Latest Achievement (Sunny Cream) & Subordinate Coin Balance */}
             <div className="lg:col-span-3 flex flex-col gap-4">
-              <Card padding="md" className="flex-1 flex flex-col justify-between">
+              <Card
+                padding="md"
+                surfaceTone="cream"
+                accentTop="accent"
+                className="flex-1 flex flex-col justify-between"
+              >
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <span className="typo-caption block">
-                      {bi(lang, 'آخرین دستاورد', 'Latest Achievement')}
+                    <span className="text-xs font-bold text-accent-800 block">
+                      {bi(lang, 'آخرین مدال کسب‌شده', 'Latest Unlocked Badge')}
                     </span>
                     <h3 className="typo-card-title mt-0.5">
                       {bi(lang, latestBadge.titleFa, latestBadge.titleEn)}
                     </h3>
                   </div>
-                  <div className="p-2 rounded-full bg-accent-100 text-accent-700">
-                    <Award className="w-5 h-5" aria-hidden="true" />
-                  </div>
+                  <BadgeGraphic icon={latestBadge.iconKey} unlocked size={48} />
                 </div>
                 <p className="typo-caption my-2">
                   {bi(lang, latestBadge.criteriaFa, latestBadge.criteriaEn)}
                 </p>
                 <Link
                   to="/student/achievements"
-                  className="text-xs font-semibold text-brand-700 hover:underline inline-flex items-center gap-1"
+                  className="text-xs font-bold text-accent-800 hover:underline inline-flex items-center gap-1"
                 >
-                  <span>{bi(lang, 'مشاهده تالار افتخار', 'View Honor Roll')}</span>
+                  <span>{bi(lang, 'مشاهده همه مدال‌ها', 'View All Achievements')}</span>
                   <ArrowIcon className="w-3.5 h-3.5" />
                 </Link>
               </Card>
 
-              {/* 7. Secondary Coin Balance — explicitly quiet and subordinate */}
-              <Card padding="sm" className="bg-canvas/75">
+              {/* Secondary Coin Balance — intentionally calm and subordinate */}
+              <Card padding="sm" className="bg-surface">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <Coins className="w-4 h-4 text-accent-700" aria-hidden="true" />
+                    <div className="w-8 h-8 rounded-full bg-accent-100 border border-accent-200 flex items-center justify-center">
+                      <Coins className="w-4 h-4 text-accent-700" aria-hidden="true" />
+                    </div>
                     <div>
-                      <span className="text-xs text-ink-600 block">
-                        {bi(lang, 'موجودی سکه (انگیزشی)', 'Coin Balance')}
+                      <span className="text-[11px] font-medium text-ink-600 block">
+                        {bi(lang, 'سکه انگیزشی', 'Reward Coins')}
                       </span>
                       <strong className="text-sm text-ink-900">
                         {fmtNum(coins, lang)} {bi(lang, 'سکه', 'coins')}
@@ -498,7 +646,7 @@ export const StudentLandingPage: React.FC = () => {
                   </div>
                   <Link
                     to="/student/store"
-                    className="text-xs font-semibold text-brand-700 hover:underline"
+                    className="text-xs font-bold text-brand-700 hover:underline"
                   >
                     {bi(lang, 'فروشگاه آواتار', 'Avatar Store')}
                   </Link>

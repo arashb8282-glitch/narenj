@@ -17,6 +17,7 @@ import {
 } from '../../components/ui/Primitives';
 import { TOPICS } from '../../data/mockData';
 import { bi, fmtNum } from '../../utils/format';
+import { getTopicTheme } from '../../utils/theme';
 
 export const TopicDetailPage: React.FC = () => {
   const { topicId } = useParams<{ topicId: string }>();
@@ -25,6 +26,7 @@ export const TopicDetailPage: React.FC = () => {
   const BackArrow = lang === 'fa' ? ArrowRight : ArrowLeft;
 
   const topic = TOPICS.find((t) => t.id === topicId) ?? TOPICS[0];
+  const theme = getTopicTheme(topic.id);
   const topicSkills = skills.filter((s) => s.topicId === topic.id);
   const avgProgress = Math.round(
     topicSkills.reduce((sum, s) => sum + s.demoProgress, 0) / Math.max(1, topicSkills.length)
@@ -58,14 +60,23 @@ export const TopicDetailPage: React.FC = () => {
       />
 
       {/* Topic Summary & Recommended Entry Banner */}
-      <Card padding="lg" className="mb-6 bg-surface">
+      <Card
+        padding="lg"
+        surfaceTone={theme.surfaceTone}
+        accentTop={theme.accentTop}
+        className="mb-6"
+      >
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="flex items-start gap-4">
             <TopicIllustration kind={topic.illustrationKey} size={72} />
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge tone="brand">
-                  {bi(lang, `ریاضی • پایه ${fmtNum(topic.grade, 'fa')}`, `Math • Grade ${topic.grade}`)}
+                <Badge tone={theme.badgeTone}>
+                  {bi(
+                    lang,
+                    `ریاضی • پایه ${fmtNum(topic.grade, 'fa')}`,
+                    `Math • Grade ${topic.grade}`
+                  )}
                 </Badge>
                 <Badge tone="neutral">
                   {fmtNum(topicSkills.length, lang)} {bi(lang, 'مهارت تمرینی', 'Practice Skills')}
@@ -74,22 +85,24 @@ export const TopicDetailPage: React.FC = () => {
               <p className="typo-body text-ink-600 max-w-2xl">
                 {bi(
                   lang,
-                  'این صفحه برای مقایسه UX «صفحه مستقل مبحث» با «مرور درختی درون کتابخانه» طراحی شده است تا تیم محصول وضوح تمرکز دانش‌آموز را ارزیابی کند.',
+                  'این صفحه برای مقایسه UX «صفحه مستقل مبحث» با «مرور درختی درون کتابخانه» طراحی شده تا تمرکز دانش‌آموز ارزیابی شود.',
                   'Dedicated Topic Detail view built to evaluate focused topic exploration vs. inline Skill Library tree.'
                 )}
               </p>
             </div>
           </div>
 
-          <div className="lg:w-72 shrink-0 space-y-3 p-4 rounded-card bg-brand-50 border border-brand-200">
+          <div className="lg:w-80 shrink-0 space-y-3 p-4 rounded-card bg-surface border border-border-strong shadow-xs">
             <ProgressBar
               value={avgProgress}
               lang={lang}
+              size="md"
+              tone={theme.progressTone}
               label={bi(lang, 'پیشرفت کل مبحث (داده نمونه)', 'Topic Progress (Demo)')}
             />
             {suggestedSkill && (
               <Button
-                variant="primary"
+                variant="cta"
                 className="w-full"
                 onClick={() => navigate(`/student/practice/${suggestedSkill.id}`)}
                 icon={<Play className="w-4 h-4 fill-current" />}
@@ -115,19 +128,24 @@ export const TopicDetailPage: React.FC = () => {
             'Return to the Skill Library to choose another topic.'
           )}
           action={
-            <Button onClick={() => navigate('/student/skills')} icon={<BookOpen className="w-4 h-4" />}>
+            <Button
+              variant="cta"
+              onClick={() => navigate('/student/skills')}
+              icon={<BookOpen className="w-4 h-4" />}
+            >
               {bi(lang, 'کتابخانه مهارت‌ها', 'Skill Library')}
             </Button>
           }
         />
       ) : topic.subtopics && topic.subtopics.length > 0 ? (
-        <div className="space-y-6">
+        <div className="space-y-7">
           {topic.subtopics.map((sub) => {
             const subSkills = topicSkills.filter((s) => s.subtopicId === sub.id);
             if (subSkills.length === 0) return null;
             return (
               <section key={sub.id}>
                 <SectionHeader
+                  accentColor={theme.accentTop}
                   title={bi(lang, sub.titleFa, sub.titleEn)}
                   subtitle={bi(
                     lang,
@@ -147,6 +165,7 @@ export const TopicDetailPage: React.FC = () => {
       ) : (
         <section>
           <SectionHeader
+            accentColor={theme.accentTop}
             title={bi(lang, 'فهرست مهارت‌های مبحث', 'Skills in This Topic')}
             subtitle={bi(
               lang,

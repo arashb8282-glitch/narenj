@@ -19,9 +19,10 @@ export const RolesPlaceholderPage: React.FC = () => {
 
   return (
     <AppShell roleOverride="minimal">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
         <PageHeader
           lang={lang}
+          icon={<Users className="w-6 h-6" />}
           title={bi(
             lang,
             'نقش‌های والدین و مدیر مدرسه (Placeholder)',
@@ -42,10 +43,10 @@ export const RolesPlaceholderPage: React.FC = () => {
           }
         />
 
-        <Card padding="lg" className="space-y-6">
+        <Card padding="lg" accentTop="lavender" className="space-y-6">
           <div className="text-center">
             <EmptyStateIllustration variant="classroom" />
-            <div className="mt-4 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-warning-100 text-warning-600 text-xs font-bold border border-warning-600/30">
+            <div className="mt-4 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-100 text-orange-700 text-xs font-bold border border-orange-200">
               <ShieldAlert className="w-4 h-4" />
               <span>
                 {bi(
@@ -58,13 +59,13 @@ export const RolesPlaceholderPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 rounded-card bg-canvas border border-border space-y-2">
-              <div className="flex items-center justify-between">
+            <div className="p-5 rounded-card bg-surface-lavender border border-lavender-200 space-y-2">
+              <div className="flex items-center justify-between gap-2">
                 <h2 className="typo-card-title flex items-center gap-2">
-                  <Users className="w-5 h-5 text-brand-700" />
+                  <Users className="w-5 h-5 text-lavender-700" />
                   <span>{bi(lang, 'پنل والدین (Parent)', 'Parent View')}</span>
                 </h2>
-                <Badge tone="neutral">{bi(lang, 'خارج از دامنه فعلی', 'Pending Spec')}</Badge>
+                <Badge tone="lavender">{bi(lang, 'خارج از دامنه فعلی', 'Pending Spec')}</Badge>
               </div>
               <p className="typo-caption leading-relaxed">
                 {bi(
@@ -75,13 +76,13 @@ export const RolesPlaceholderPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-4 rounded-card bg-canvas border border-border space-y-2">
-              <div className="flex items-center justify-between">
+            <div className="p-5 rounded-card bg-surface-sky border border-turquoise-200 space-y-2">
+              <div className="flex items-center justify-between gap-2">
                 <h2 className="typo-card-title flex items-center gap-2">
-                  <Building2 className="w-5 h-5 text-brand-700" />
+                  <Building2 className="w-5 h-5 text-brand-800" />
                   <span>{bi(lang, 'پنل مدیر مدرسه (School Admin)', 'School Administrator')}</span>
                 </h2>
-                <Badge tone="neutral">{bi(lang, 'خارج از دامنه فعلی', 'Pending Spec')}</Badge>
+                <Badge tone="turquoise">{bi(lang, 'خارج از دامنه فعلی', 'Pending Spec')}</Badge>
               </div>
               <p className="typo-caption leading-relaxed">
                 {bi(
@@ -95,7 +96,7 @@ export const RolesPlaceholderPage: React.FC = () => {
 
           <div className="pt-4 border-t border-border flex flex-wrap justify-center gap-3">
             <Button
-              variant="primary"
+              variant="cta"
               onClick={() => {
                 setActiveRole('student');
                 navigate('/student');
@@ -104,7 +105,7 @@ export const RolesPlaceholderPage: React.FC = () => {
               {bi(lang, 'بازگشت به تجربه دانش‌آموز (آوا)', 'Inspect Student Experience')}
             </Button>
             <Button
-              variant="secondary"
+              variant="primary"
               onClick={() => {
                 setActiveRole('teacher');
                 navigate('/teacher');

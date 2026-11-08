@@ -20,6 +20,7 @@ import {
 } from '../../components/ui/Primitives';
 import { STUDENT_WEEKLY_MINUTES_SERIES, TOPICS } from '../../data/mockData';
 import { bi, fmtNum, fmtPercent } from '../../utils/format';
+import { getTopicTheme } from '../../utils/theme';
 
 export const StudentAnalyticsPage: React.FC = () => {
   const { lang, skills, pageSimState, setPageSimState } = usePrototype();
@@ -41,6 +42,7 @@ export const StudentAnalyticsPage: React.FC = () => {
     <AppShell roleOverride="student">
       <PageHeader
         lang={lang}
+        icon={<BarChart3 className="w-6 h-6" />}
         breadcrumbs={[
           { label: bi(lang, 'خانه', 'Home'), to: '/student' },
           { label: bi(lang, 'پیشرفت من', 'My Progress') },
@@ -72,7 +74,7 @@ export const StudentAnalyticsPage: React.FC = () => {
       {pageSimState !== 'loading' && pageSimState !== 'error' && (
         <div className="space-y-6">
           {/* Filter Bar */}
-          <Card padding="sm">
+          <Card padding="md" surfaceTone="sky">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
               <SelectField
                 id="stu-analytics-topic"
@@ -98,10 +100,11 @@ export const StudentAnalyticsPage: React.FC = () => {
                   { value: 'term', label: bi(lang, 'از ابتدای سال تحصیلی', 'Current Term') },
                 ]}
               />
-              <div className="flex items-center justify-end">
+              <div className="flex items-center sm:justify-end">
                 <Button
-                  variant="ghost"
+                  variant="secondary"
                   size="sm"
+                  className="w-full sm:w-auto"
                   onClick={() =>
                     setPageSimState(
                       pageSimState === 'insufficient_data' ? 'normal' : 'insufficient_data'
@@ -110,7 +113,7 @@ export const StudentAnalyticsPage: React.FC = () => {
                 >
                   {pageSimState === 'insufficient_data'
                     ? bi(lang, 'بازگشت به داده عادی', 'Show Normal Demo Data')
-                    : bi(lang, 'شبیه‌سازی حالت داده ناکافی', 'Test Insufficient Data State')}
+                    : bi(lang, 'تست حالت داده ناکافی', 'Test Insufficient Data')}
                 </Button>
               </div>
             </div>
@@ -131,7 +134,7 @@ export const StudentAnalyticsPage: React.FC = () => {
               )}
               action={
                 <Button
-                  variant="primary"
+                  variant="cta"
                   onClick={() => navigate(`/student/practice/${nextActionSkill.id}`)}
                 >
                   {bi(lang, 'شروع یک جلسه تمرین', 'Start a Practice Session')}
@@ -140,9 +143,10 @@ export const StudentAnalyticsPage: React.FC = () => {
             />
           ) : (
             <>
-              {/* Summary StatCards with Explicit Definitions */}
+              {/* Summary StatCards with Distinct Semantic Color Coding */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <StatCard
+                  tone="turquoise"
                   label={bi(lang, 'زمان تمرین این هفته', 'Practice Time (7d)')}
                   value={`${fmtNum(rangeFilter === '30d' ? 245 : 65, lang)} ${bi(lang, 'دقیقه', 'min')}`}
                   definition={bi(
@@ -154,6 +158,7 @@ export const StudentAnalyticsPage: React.FC = () => {
                   icon={<Clock className="w-5 h-5" />}
                 />
                 <StatCard
+                  tone="lavender"
                   label={bi(lang, 'پرسش‌های پاسخ‌داده‌شده', 'Questions Answered')}
                   value={fmtNum(rangeFilter === '30d' ? 118 : 34, lang)}
                   definition={bi(
@@ -165,6 +170,7 @@ export const StudentAnalyticsPage: React.FC = () => {
                   icon={<BarChart3 className="w-5 h-5" />}
                 />
                 <StatCard
+                  tone="success"
                   label={bi(lang, 'میانگین دقت پاسخ‌ها', 'Response Accuracy')}
                   value={fmtPercent(80, lang)}
                   definition={bi(
@@ -176,6 +182,7 @@ export const StudentAnalyticsPage: React.FC = () => {
                   icon={<TrendingUp className="w-5 h-5" />}
                 />
                 <StatCard
+                  tone="orange"
                   label={bi(lang, 'مهارت‌های تمرین‌شده', 'Skills Practiced')}
                   value={`${fmtNum(5, lang)} ${bi(lang, 'از ۹ مهارت', 'of 9 skills')}`}
                   definition={bi(
@@ -189,17 +196,23 @@ export const StudentAnalyticsPage: React.FC = () => {
               </div>
 
               {/* Actionable Next Step Banner */}
-              <Card padding="md" className="bg-brand-50 border-brand-200">
+              <Card padding="md" surfaceTone="apricot" accentTop="orange">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="space-y-1">
-                    <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-700">
+                    <div className="inline-flex items-center gap-1.5 text-xs font-bold text-orange-700">
                       <Sparkles className="w-4 h-4" aria-hidden="true" />
-                      <span>{bi(lang, 'گام پیشنهادی بعدی بر اساس عملکرد شما', 'Suggested Next Learning Step')}</span>
+                      <span>
+                        {bi(
+                          lang,
+                          'گام پیشنهادی بعدی بر اساس عملکرد شما',
+                          'Suggested Next Learning Step'
+                        )}
+                      </span>
                     </div>
                     <h2 className="typo-card-title text-lg">
                       {bi(lang, nextActionSkill.titleFa, nextActionSkill.titleEn)}
                     </h2>
-                    <p className="typo-caption text-ink-900">
+                    <p className="typo-caption text-ink-800">
                       {bi(
                         lang,
                         nextActionSkill.attentionNoteFa ??
@@ -210,7 +223,7 @@ export const StudentAnalyticsPage: React.FC = () => {
                     </p>
                   </div>
                   <Button
-                    variant="primary"
+                    variant="cta"
                     onClick={() => navigate(`/student/practice/${nextActionSkill.id}`)}
                     icon={<Play className="w-4 h-4 fill-current" />}
                   >
@@ -219,7 +232,7 @@ export const StudentAnalyticsPage: React.FC = () => {
                 </div>
               </Card>
 
-              {/* Accessible Weekly Chart */}
+              {/* Multi-color Accessible Weekly Chart */}
               <ChartPanel
                 lang={lang}
                 title={bi(
@@ -229,12 +242,14 @@ export const StudentAnalyticsPage: React.FC = () => {
                 )}
                 subtitle={bi(
                   lang,
-                  'ستون آبی زمان تمرین (دقیقه) و ستون کهربایی درصد پاسخ درست در همان روز را نشان می‌دهد.',
-                  'Teal bars show practice minutes; amber bars indicate accuracy percentage.'
+                  'ستون فیروزه‌ای زمان تمرین (دقیقه) و ستون نارنجی درصد پاسخ درست همان روز را نشان می‌دهد.',
+                  'Turquoise bars show practice minutes; warm orange bars indicate accuracy percentage.'
                 )}
+                primaryColorClass="bg-turquoise-500"
+                secondaryColorClass="bg-orange-500"
                 legendItems={[
-                  { label: bi(lang, 'دقایق تمرین', 'Minutes'), colorClass: 'bg-brand-600' },
-                  { label: bi(lang, 'درصد دقت (نمونه)', 'Accuracy %'), colorClass: 'bg-accent-500' },
+                  { label: bi(lang, 'دقایق تمرین', 'Minutes'), colorClass: 'bg-turquoise-500' },
+                  { label: bi(lang, 'درصد دقت (نمونه)', 'Accuracy %'), colorClass: 'bg-orange-500' },
                 ]}
                 maxVal={30}
                 bars={STUDENT_WEEKLY_MINUTES_SERIES.map((d) => ({
@@ -245,9 +260,10 @@ export const StudentAnalyticsPage: React.FC = () => {
                 }))}
               />
 
-              {/* Constructive Skill-Level Performance List (Zero vague "weak" labels!) */}
+              {/* Constructive Skill-Level Performance Breakdown (Desktop Table + Mobile Cards) */}
               <section>
                 <SectionHeader
+                  accentColor="success"
                   title={bi(lang, 'جزئیات عملکرد به تفکیک مهارت', 'Skill-by-Skill Breakdown')}
                   subtitle={bi(
                     lang,
@@ -255,16 +271,18 @@ export const StudentAnalyticsPage: React.FC = () => {
                     'Uses constructive, explainable learning guidance rather than vague labels like "weak".'
                   )}
                 />
-                <Card padding="none" className="overflow-hidden">
+
+                {/* Desktop Table */}
+                <Card padding="none" className="hidden md:block overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm text-start">
-                      <thead className="bg-canvas border-b border-border text-xs text-ink-600">
+                      <thead className="bg-surface-sky border-b border-border text-xs font-bold text-brand-900">
                         <tr>
                           <th className="py-3.5 px-4 text-start">{bi(lang, 'مهارت', 'Skill')}</th>
                           <th className="py-3.5 px-4 text-start">
                             {bi(lang, 'وضعیت پیشنهادی', 'Proposed Status')}
                           </th>
-                          <th className="py-3.5 px-4 text-start w-48">
+                          <th className="py-3.5 px-4 text-start w-52">
                             {bi(lang, 'پیشرفت نمایشی', 'Demo Progress')}
                           </th>
                           <th className="py-3.5 px-4 text-start">
@@ -274,52 +292,118 @@ export const StudentAnalyticsPage: React.FC = () => {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-border">
-                        {grade6Skills.map((sk) => (
-                          <tr key={sk.id} className="hover:bg-canvas/50">
-                            <td className="py-3.5 px-4 font-semibold text-ink-900">
-                              <div>{bi(lang, sk.titleFa, sk.titleEn)}</div>
-                              <span className="ltr-token text-xs text-ink-600 font-normal">
-                                {sk.code}
-                              </span>
-                            </td>
-                            <td className="py-3.5 px-4">
-                              <SkillStatusPill status={sk.status} lang={lang} />
-                            </td>
-                            <td className="py-3.5 px-4">
-                              <ProgressBar value={sk.demoProgress} lang={lang} showValue />
-                            </td>
-                            <td className="py-3.5 px-4 text-xs text-ink-600 max-w-xs">
-                              {sk.attentionNoteFa
-                                ? bi(lang, sk.attentionNoteFa, sk.attentionNoteEn ?? '')
-                                : sk.status === 'mastered'
-                                  ? bi(
-                                      lang,
-                                      'پاسخ‌گویی پایدار و دقیق در پرسش‌های اخیر',
-                                      'Consistent accuracy in recent questions'
-                                    )
-                                  : bi(
-                                      lang,
-                                      'آماده شروع و کشف مفهوم جدید',
-                                      'Ready to start exploring'
-                                    )}
-                            </td>
-                            <td className="py-3.5 px-4 text-end">
-                              <Button
-                                variant="secondary"
-                                size="sm"
-                                onClick={() => navigate(`/student/practice/${sk.id}`)}
-                              >
-                                {sk.status === 'not_started'
-                                  ? bi(lang, 'شروع', 'Start')
-                                  : bi(lang, 'ادامه / مرور', 'Practice')}
-                              </Button>
-                            </td>
-                          </tr>
-                        ))}
+                        {grade6Skills.map((sk) => {
+                          const theme = getTopicTheme(sk.topicId);
+                          const barTone =
+                            sk.status === 'mastered'
+                              ? 'success'
+                              : sk.status === 'needs_review'
+                                ? 'coral'
+                                : theme.progressTone;
+                          return (
+                            <tr key={sk.id} className="hover:bg-surface-sky/40 transition-colors">
+                              <td className="py-3.5 px-4 font-bold text-ink-900">
+                                <div>{bi(lang, sk.titleFa, sk.titleEn)}</div>
+                                <span className={`ltr-token inline-block mt-1 text-[11px] font-bold px-2 py-0.5 rounded-full ${theme.chipClass}`}>
+                                  {sk.code}
+                                </span>
+                              </td>
+                              <td className="py-3.5 px-4">
+                                <SkillStatusPill status={sk.status} lang={lang} />
+                              </td>
+                              <td className="py-3.5 px-4">
+                                <ProgressBar value={sk.demoProgress} lang={lang} tone={barTone} showValue />
+                              </td>
+                              <td className="py-3.5 px-4 text-xs text-ink-600 max-w-xs">
+                                {sk.attentionNoteFa
+                                  ? bi(lang, sk.attentionNoteFa, sk.attentionNoteEn ?? '')
+                                  : sk.status === 'mastered'
+                                    ? bi(
+                                        lang,
+                                        'پاسخ‌گویی پایدار و دقیق در پرسش‌های اخیر',
+                                        'Consistent accuracy in recent questions'
+                                      )
+                                    : bi(
+                                        lang,
+                                        'آماده شروع و کشف مفهوم جدید',
+                                        'Ready to start exploring'
+                                      )}
+                              </td>
+                              <td className="py-3.5 px-4 text-end">
+                                <Button
+                                  variant={sk.status === 'needs_review' ? 'cta' : 'secondary'}
+                                  size="sm"
+                                  onClick={() => navigate(`/student/practice/${sk.id}`)}
+                                >
+                                  {sk.status === 'not_started'
+                                    ? bi(lang, 'شروع', 'Start')
+                                    : bi(lang, 'ادامه / مرور', 'Practice')}
+                                </Button>
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
                 </Card>
+
+                {/* Intentional Mobile Card List (390px / 430px) */}
+                <div className="md:hidden space-y-3">
+                  {grade6Skills.map((sk) => {
+                    const theme = getTopicTheme(sk.topicId);
+                    const barTone =
+                      sk.status === 'mastered'
+                        ? 'success'
+                        : sk.status === 'needs_review'
+                          ? 'coral'
+                          : theme.progressTone;
+                    return (
+                      <Card
+                        key={sk.id}
+                        padding="md"
+                        surfaceTone={sk.status === 'needs_review' ? 'coral' : 'white'}
+                        accentTop={sk.status === 'needs_review' ? 'coral' : theme.accentTop}
+                        className="space-y-3"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <span className={`ltr-token text-xs font-bold px-2.5 py-0.5 rounded-full ${theme.chipClass}`}>
+                            {sk.code}
+                          </span>
+                          <SkillStatusPill status={sk.status} lang={lang} />
+                        </div>
+                        <h3 className="typo-card-title">{bi(lang, sk.titleFa, sk.titleEn)}</h3>
+                        <ProgressBar
+                          value={sk.demoProgress}
+                          lang={lang}
+                          tone={barTone}
+                          label={bi(lang, 'پیشرفت نمونه', 'Demo Progress')}
+                        />
+                        <p className="text-xs text-ink-600">
+                          {sk.attentionNoteFa
+                            ? bi(lang, sk.attentionNoteFa, sk.attentionNoteEn ?? '')
+                            : sk.status === 'mastered'
+                              ? bi(
+                                  lang,
+                                  'پاسخ‌گویی پایدار و دقیق در پرسش‌های اخیر',
+                                  'Consistent accuracy in recent questions'
+                                )
+                              : bi(lang, 'آماده شروع و کشف مفهوم جدید', 'Ready to start exploring')}
+                        </p>
+                        <Button
+                          variant={sk.status === 'needs_review' ? 'cta' : 'secondary'}
+                          size="sm"
+                          className="w-full"
+                          onClick={() => navigate(`/student/practice/${sk.id}`)}
+                        >
+                          {sk.status === 'not_started'
+                            ? bi(lang, 'شروع تمرین', 'Start Practice')
+                            : bi(lang, 'ادامه / مرور مهارت', 'Practice Skill')}
+                        </Button>
+                      </Card>
+                    );
+                  })}
+                </div>
               </section>
             </>
           )}

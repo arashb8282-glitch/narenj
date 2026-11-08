@@ -1,49 +1,101 @@
 /* ==========================================================================
-   ROSHANA — Prototype Design Tokens (Proposed, Unapproved v0.1)
-   Reference: ROSHANA_AGENT_ARENA_WIREFRAME_BRIEF_FA.md (Section 4)
+   ROSHANA — Expanded Visual System & Semantic Color Tokens (v0.2 Redesign)
+   Art Direction: Energetic, Structured, Sunlit Persian Geometry
    ========================================================================== */
 
 :root {
-  /* Primary Brand Palette */
-  --color-brand-50: #f3f8fa;
-  --color-brand-100: #e7f2f5;
-  --color-brand-200: #c8dfe6;
-  --color-brand-600: #2f7891;
-  --color-brand-700: #245b73;
-  --color-brand-800: #1b4557;
+  /* 1. Deep Teal / Blue — Primary Brand Identity & Navigation */
+  --color-brand-950: #092635;
+  --color-brand-900: #0f384c;
+  --color-brand-800: #154c66;
+  --color-brand-700: #1b6282;
+  --color-brand-600: #227ba1;
+  --color-brand-200: #bce3f2;
+  --color-brand-100: #e1f3fa;
+  --color-brand-50: #f0f9fd;
 
-  /* Accent & Achievement Palette */
-  --color-accent-100: #fef5e7;
-  --color-accent-200: #fbe2b8;
-  --color-accent-500: #f2a541;
-  --color-accent-700: #995f11;
+  /* 2. Vibrant Turquoise — Interactive Elements, Links & Selected States */
+  --color-turquoise-700: #097383;
+  --color-turquoise-600: #0d92a6;
+  --color-turquoise-500: #14b3c9;
+  --color-turquoise-200: #a6ecf5;
+  --color-turquoise-100: #dcf7fb;
+  --color-turquoise-50: #eefbfd;
 
-  /* Semantic Status Palette */
-  --color-success-100: #e8f4ee;
-  --color-success-600: #27845d;
+  /* 3. Warm Orange — Primary Calls-to-Action & Key Highlights */
+  --color-orange-700: #bd4310;
+  --color-orange-600: #df5418;
+  --color-orange-500: #f36d2f;
+  --color-orange-200: #ffd2b8;
+  --color-orange-100: #ffeadb;
+  --color-orange-50: #fff6ef;
 
-  --color-warning-100: #fcf3e3;
-  --color-warning-600: #b97719;
+  /* 4. Sunny Yellow / Gold — Achievements, Streaks, Milestones & Rewards */
+  --color-accent-800: #7c4e05;
+  --color-accent-700: #9a6207;
+  --color-accent-600: #c8830d;
+  --color-accent-500: #f5b524;
+  --color-accent-200: #fde396;
+  --color-accent-100: #fef3c7;
+  --color-accent-50: #fffbeb;
 
-  --color-danger-100: #fbeceb;
-  --color-danger-600: #b94a48;
+  /* 5. Fresh Green — Successful Learning States, Mastery & Correct Feedback */
+  --color-success-700: #136a47;
+  --color-success-600: #1b8a5d;
+  --color-success-500: #25ab75;
+  --color-success-200: #b2ebd2;
+  --color-success-100: #dcf7eb;
+  --color-success-50: #eefbf5;
 
-  /* Neutral & Surface Palette */
-  --color-ink-900: #202b33;
-  --color-ink-600: #5e6b73;
-  --color-ink-400: #87959e;
+  /* 6. Soft Lavender — Secondary Learning Categories, Geometry & Quiz Studio */
+  --color-lavender-700: #5240ad;
+  --color-lavender-600: #6854c9;
+  --color-lavender-500: #826fe0;
+  --color-lavender-200: #d5cdfb;
+  --color-lavender-100: #ece8fd;
+  --color-lavender-50: #f6f4fe;
+
+  /* 7. Coral — Attention Alerts, Overdue Deadlines & Remedial Focus */
+  --color-coral-700: #b42d40;
+  --color-coral-600: #d63d52;
+  --color-coral-500: #ed576b;
+  --color-coral-200: #ffc4cc;
+  --color-coral-100: #ffe4e8;
+  --color-coral-50: #fff2f4;
+
+  /* Legacy Semantic Aliases (Preserving compatibility + richer tones) */
+  --color-warning-700: #965b09;
+  --color-warning-600: #be7610;
+  --color-warning-100: #fef1d6;
+  --color-danger-600: #d63d52;
+  --color-danger-100: #ffe4e8;
+
+  /* 8. Coordinated Surfaces, Backgrounds, Text & Borders */
+  --color-ink-900: #14222b;
+  --color-ink-700: #2e404d;
+  --color-ink-600: #4c5f6d;
+  --color-ink-400: #7f929f;
+
+  --color-canvas: #f3f7fa;
+  --color-canvas-warm: #fcf8ef;
   --color-surface: #ffffff;
-  --color-canvas: #f5f7f8;
-  --color-border: #dce4e8;
+  --color-surface-sky: #ebf6fb;
+  --color-surface-cream: #fdf6e4;
+  --color-surface-lavender: #f3f0fd;
+  --color-surface-mint: #eaf9f2;
+  --color-surface-coral: #fff1f3;
+
+  --color-border: #d5e2ea;
+  --color-border-strong: #b8cdd9;
 
   /* Typography Scale */
   --font-family-primary: 'Abar', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-family-latin: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-size-page-title: 1.75rem;   /* 28px (within 24–30px) */
-  --font-size-section-title: 1.25rem;/* 20px (within 18–22px) */
-  --font-size-card-title: 1.0625rem; /* 17px (within 16–18px) */
-  --font-size-body: 0.9375rem;       /* 15px (within 14–16px) */
-  --font-size-caption: 0.8125rem;    /* 13px (within 12–13px) */
+  --font-size-page-title: 1.8125rem;   /* 29px */
+  --font-size-section-title: 1.25rem;  /* 20px */
+  --font-size-card-title: 1.0625rem;   /* 17px */
+  --font-size-body: 0.9375rem;         /* 15px */
+  --font-size-caption: 0.8125rem;      /* 13px */
 
   /* Spacing System (4px base) */
   --space-1: 4px;
@@ -57,14 +109,14 @@
 
   /* Layout Dimensions */
   --layout-max-width: 1440px;
-  --sidebar-width: 256px;
+  --sidebar-width: 264px;
   --topbar-height: 68px;
-  --preview-bar-height: 40px;
 
-  /* Radii & Subtle Elevation */
-  --radius-control: 8px;
-  --radius-card: 14px;
-  --radius-card-lg: 16px;
-  --shadow-floating: 0 10px 28px -6px rgba(32, 43, 51, 0.14), 0 2px 6px -1px rgba(32, 43, 51, 0.06);
-  --shadow-subtle: 0 1px 2px rgba(32, 43, 51, 0.04);
+  /* Radii & Tactile Elevation */
+  --radius-control: 10px;
+  --radius-card: 16px;
+  --radius-card-lg: 20px;
+  --shadow-subtle: 0 2px 8px -2px rgba(15, 56, 76, 0.06), 0 1px 3px rgba(15, 56, 76, 0.04);
+  --shadow-card-hover: 0 10px 24px -6px rgba(15, 56, 76, 0.12), 0 3px 8px -2px rgba(15, 56, 76, 0.06);
+  --shadow-floating: 0 18px 38px -8px rgba(9, 38, 53, 0.2), 0 4px 10px -2px rgba(9, 38, 53, 0.08);
 }

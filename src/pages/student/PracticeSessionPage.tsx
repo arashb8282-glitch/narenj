@@ -33,6 +33,7 @@ import {
 } from '../../components/ui/Primitives';
 import { QUESTION_BANK, TOPICS } from '../../data/mockData';
 import { bi, fmtNum } from '../../utils/format';
+import { getTopicTheme } from '../../utils/theme';
 
 export const PracticeSessionPage: React.FC = () => {
   const { skillId } = useParams<{ skillId: string }>();
@@ -48,6 +49,7 @@ export const PracticeSessionPage: React.FC = () => {
 
   const skill = skills.find((s) => s.id === skillId) ?? skills[0];
   const topic = TOPICS.find((t) => t.id === skill.topicId) ?? TOPICS[0];
+  const theme = getTopicTheme(topic.id);
 
   const questions = useMemo(() => {
     const matched = QUESTION_BANK.filter((q) => q.skillId === skill.id);
@@ -107,7 +109,7 @@ export const PracticeSessionPage: React.FC = () => {
 
   const handleSubmitAnswer = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (submitting || feedback?.submitted) return; // Duplicate submit guard!
+    if (submitting || feedback?.submitted) return;
 
     setEmptyError(false);
     setNetworkError(false);
@@ -151,7 +153,7 @@ export const PracticeSessionPage: React.FC = () => {
         isCorrect,
         studentDisplay,
       });
-    }, 380);
+    }, 360);
   };
 
   const handleNextQuestion = () => {
@@ -192,7 +194,6 @@ export const PracticeSessionPage: React.FC = () => {
     navigate('/student');
   };
 
-  // UX quick-trigger helpers so reviewers can inspect Feedback states effortlessly
   const triggerQuickState = (mode: 'correct' | 'wrong' | 'net_err' | 'complete') => {
     setEmptyError(false);
     setNetworkError(false);
@@ -238,36 +239,34 @@ export const PracticeSessionPage: React.FC = () => {
   return (
     <AppShell roleOverride="student" focusedMode>
       <div className="max-w-3xl mx-auto">
-        {/* Focused Practice Top Bar (Primary sidebar minimized to protect focus!) */}
-        <header className="bg-surface rounded-card border border-border px-4 sm:px-5 py-3.5 mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2 text-xs text-ink-600">
-              <span className="font-semibold text-brand-700">
-                {bi(lang, topic.titleFa, topic.titleEn)}
-              </span>
+        {/* Focused Practice Top Bar — compact & comfortable on 390px mobile */}
+        <header className="bg-brand-900 text-white rounded-card px-3.5 sm:px-5 py-3 mb-3.5 shadow-card flex flex-wrap items-center justify-between gap-2.5">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-1.5 text-[11px] sm:text-xs text-turquoise-200">
+              <span className="font-bold">{bi(lang, topic.titleFa, topic.titleEn)}</span>
               <span>•</span>
-              <span className="ltr-token">{skill.code}</span>
+              <span className="ltr-token font-semibold">{skill.code}</span>
             </div>
-            <h1 className="text-base sm:text-lg font-semibold text-ink-900 truncate">
+            <h1 className="text-sm sm:text-lg font-bold text-white truncate">
               {bi(lang, skill.titleFa, skill.titleEn)}
             </h1>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex items-center gap-2 shrink-0">
             {/* Save-state indicator */}
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-canvas border border-border text-ink-600">
-              <Save className="w-3.5 h-3.5 text-success-600" aria-hidden="true" />
+            <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-white/90">
+              <Save className="w-3.5 h-3.5 text-success-500" aria-hidden="true" />
               <span>
                 {saveState === 'saving'
                   ? bi(lang, 'در حال ذخیره...', 'Saving...')
-                  : bi(lang, 'ذخیره خودکار انجام شد', 'Auto-saved')}
+                  : bi(lang, 'ذخیره خودکار', 'Auto-saved')}
               </span>
             </span>
 
-            {/* Illustrative SmartScore — clearly marked unapproved demo! */}
-            <div className="inline-flex items-center px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-xs font-semibold text-brand-700">
+            {/* Illustrative Demo Score */}
+            <div className="inline-flex items-center px-2.5 sm:px-3 py-1 rounded-full bg-accent-500 text-ink-900 text-xs font-bold">
               <span>
-                {bi(lang, 'امتیاز تمرینی نمونه:', 'Demo Score:')}{' '}
+                {bi(lang, 'امتیاز نمونه:', 'Score:')}{' '}
                 <strong>{fmtNum(demoScore, lang)}</strong>
               </span>
               <InfoTooltip
@@ -280,57 +279,62 @@ export const PracticeSessionPage: React.FC = () => {
             </div>
 
             {/* Safe Exit Button */}
-            <Button
-              variant="secondary"
-              size="sm"
+            <button
+              type="button"
               onClick={() => setExitModalOpen(true)}
-              icon={<LogOut className="w-4 h-4 rtl-flip" />}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-control bg-white/15 hover:bg-white/25 text-white text-xs sm:text-sm font-semibold transition-colors"
             >
-              {bi(lang, 'خروج امن و ذخیره', 'Save & Exit')}
-            </Button>
+              <LogOut className="w-4 h-4 rtl-flip" />
+              <span>{bi(lang, 'خروج امن', 'Save & Exit')}</span>
+            </button>
           </div>
         </header>
 
-        {/* Subtle UX Evaluator State Trigger Bar */}
-        <div className="mb-4 px-3.5 py-2 rounded-control bg-surface border border-dashed border-border flex flex-wrap items-center justify-between gap-2 text-xs">
-          <span className="text-ink-600 font-medium">
-            {bi(lang, 'تست سریع حالت‌های تمرین و بازخورد:', 'Quick-test Feedback & Edge States:')}
+        {/* Compact horizontally scrollable UX State Trigger Bar */}
+        <div className="mb-3.5 px-3 py-2 rounded-control bg-surface/90 border border-border flex items-center justify-between gap-2 text-xs overflow-x-auto">
+          <span className="text-ink-600 font-semibold whitespace-nowrap shrink-0">
+            {bi(lang, 'تست سریع بازخورد:', 'Quick-test:')}
           </span>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex items-center gap-1.5 shrink-0">
             <button
               type="button"
               onClick={() => triggerQuickState('correct')}
-              className="px-2.5 py-1 rounded bg-success-100 text-success-600 font-semibold hover:opacity-90"
+              className="px-2.5 py-1 rounded-full bg-success-100 text-success-700 font-bold hover:opacity-90 whitespace-nowrap"
             >
-              {bi(lang, 'بازخورد پاسخ درست', 'Correct Feedback')}
+              {bi(lang, 'پاسخ درست', 'Correct')}
             </button>
             <button
               type="button"
               onClick={() => triggerQuickState('wrong')}
-              className="px-2.5 py-1 rounded bg-warning-100 text-warning-600 font-semibold hover:opacity-90"
+              className="px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 font-bold hover:opacity-90 whitespace-nowrap"
             >
-              {bi(lang, 'بازخورد پاسخ نادرست + روش حل', 'Incorrect + Steps')}
+              {bi(lang, 'پاسخ نادرست + گام‌های حل', 'Wrong + Steps')}
             </button>
             <button
               type="button"
               onClick={() => triggerQuickState('net_err')}
-              className="px-2.5 py-1 rounded bg-danger-100 text-danger-600 font-semibold hover:opacity-90"
+              className="px-2.5 py-1 rounded-full bg-coral-100 text-coral-700 font-bold hover:opacity-90 whitespace-nowrap"
             >
               {bi(lang, 'خطای شبکه', 'Network Error')}
             </button>
             <button
               type="button"
               onClick={() => triggerQuickState('complete')}
-              className="px-2.5 py-1 rounded bg-brand-100 text-brand-700 font-semibold hover:opacity-90"
+              className="px-2.5 py-1 rounded-full bg-lavender-100 text-lavender-700 font-bold hover:opacity-90 whitespace-nowrap"
             >
-              {bi(lang, 'صفحه پایان تمرین', 'Completion')}
+              {bi(lang, 'پایان جلسه', 'Complete')}
             </button>
           </div>
         </div>
 
         {/* Session Completion State */}
         {completed ? (
-          <Card padding="lg" className="text-center space-y-5">
+          <Card
+            padding="lg"
+            surfaceTone="cream"
+            accentTop="accent"
+            className="text-center space-y-5 motion-feedback"
+          >
             <CelebrationIllustration />
             <div className="space-y-1.5">
               <DemoBadge lang={lang} />
@@ -351,39 +355,39 @@ export const PracticeSessionPage: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-xl mx-auto">
-              <div className="p-3.5 rounded-card bg-canvas border border-border">
+              <div className="p-3.5 rounded-card bg-surface border border-border-strong">
                 <span className="typo-caption block">
                   {bi(lang, 'پرسش‌های بررسی‌شده', 'Questions Completed')}
                 </span>
-                <strong className="text-xl text-ink-900">
+                <strong className="text-2xl text-brand-900">
                   {fmtNum(questions.length, lang)}
                 </strong>
               </div>
-              <div className="p-3.5 rounded-card bg-canvas border border-border">
-                <span className="typo-caption block">
+              <div className="p-3.5 rounded-card bg-surface-mint border border-success-200">
+                <span className="typo-caption block text-success-700 font-semibold">
                   {bi(lang, 'پاسخ‌های درست جلسه', 'Correct in Session')}
                 </span>
-                <strong className="text-xl text-success-600">
+                <strong className="text-2xl text-success-700">
                   {fmtNum(Math.max(1, correctCount), lang)} {bi(lang, 'از', 'of')}{' '}
                   {fmtNum(questions.length, lang)}
                 </strong>
               </div>
-              <div className="p-3.5 rounded-card bg-canvas border border-border">
-                <span className="typo-caption block">
+              <div className="p-3.5 rounded-card bg-accent-100 border border-accent-200">
+                <span className="typo-caption block text-accent-800 font-semibold">
                   {bi(lang, 'پاداش انگیزشی (نمونه)', 'Demo Coins Earned')}
                 </span>
-                <strong className="text-xl text-accent-700">
+                <strong className="text-2xl text-accent-800">
                   +{fmtNum(15, lang)} {bi(lang, 'سکه', 'coins')}
                 </strong>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-              <Button variant="primary" size="lg" onClick={() => navigate('/student')}>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 pt-2">
+              <Button variant="cta" size="lg" onClick={() => navigate('/student')}>
                 {bi(lang, 'بازگشت به خانه دانش‌آموز', 'Back to Student Home')}
               </Button>
               <Button variant="secondary" size="lg" onClick={() => navigate('/student/skills')}>
-                {bi(lang, 'انتخاب مهارت بعدی از کتابخانه', 'Choose Next Skill')}
+                {bi(lang, 'انتخاب مهارت بعدی', 'Choose Next Skill')}
               </Button>
               <Button variant="ghost" size="lg" onClick={() => navigate('/student/analytics')}>
                 {bi(lang, 'مشاهده پیشرفت من', 'View My Progress')}
@@ -392,32 +396,52 @@ export const PracticeSessionPage: React.FC = () => {
           </Card>
         ) : (
           /* Active Single-Question Focused Card */
-          <Card padding="lg">
-            {/* Progress Header */}
-            <div className="mb-5 space-y-2">
-              <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-semibold text-ink-600">
-                <span>
-                  {lang === 'fa'
-                    ? `سؤال ${fmtNum(qIndex + 1, 'fa')} از ${fmtNum(questions.length, 'fa')}`
-                    : `Question ${qIndex + 1} of ${questions.length}`}
-                </span>
-                <Badge tone="neutral">
+          <Card padding="lg" surfaceTone="white" accentTop={theme.accentTop} className="shadow-card">
+            {/* Progress Header with segmented dots + animated bar */}
+            <div className="mb-5 space-y-2.5">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-ink-600">
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full bg-turquoise-100 text-brand-900">
+                    {lang === 'fa'
+                      ? `سؤال ${fmtNum(qIndex + 1, 'fa')} از ${fmtNum(questions.length, 'fa')}`
+                      : `Question ${qIndex + 1} of ${questions.length}`}
+                  </span>
+                  <div className="flex items-center gap-1" aria-hidden="true">
+                    {questions.map((q, idx) => (
+                      <span
+                        key={q.id}
+                        className={`h-2 rounded-full transition-all ${
+                          idx < qIndex || (idx === qIndex && feedback?.submitted)
+                            ? 'w-5 bg-success-500'
+                            : idx === qIndex
+                              ? 'w-6 bg-turquoise-500'
+                              : 'w-2.5 bg-border-strong'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <Badge tone="lavender">
                   {currentQuestion.type === 'multiple_choice'
-                    ? bi(lang, 'چندگزینه‌ای (نمونه نوع سؤال)', 'Multiple Choice (Sample Type)')
-                    : bi(lang, 'پاسخ عددی کوتاه (نمونه نوع سؤال)', 'Numeric Input (Sample Type)')}
+                    ? bi(lang, 'چندگزینه‌ای', 'Multiple Choice')
+                    : bi(lang, 'پاسخ عددی', 'Numeric Input')}
                 </Badge>
               </div>
               <ProgressBar
-                value={Math.round(((qIndex + (feedback?.submitted ? 1 : 0)) / questions.length) * 100)}
+                value={Math.round(
+                  ((qIndex + (feedback?.submitted ? 1 : 0)) / questions.length) * 100
+                )}
                 lang={lang}
+                size="md"
+                tone="turquoise"
                 showValue={false}
               />
             </div>
 
-            {/* Question Stem */}
+            {/* Question Stem & Form */}
             <form onSubmit={handleSubmitAnswer} className="space-y-5">
-              <div className="space-y-3">
-                <h2 className="text-lg sm:text-xl font-semibold text-ink-900 leading-relaxed">
+              <div className="p-4 sm:p-5 rounded-card bg-surface-sky/60 border border-turquoise-100 space-y-3">
+                <h2 className="text-lg sm:text-xl font-bold text-ink-900 leading-relaxed">
                   {bi(lang, currentQuestion.promptFa, currentQuestion.promptEn)}
                 </h2>
 
@@ -434,7 +458,7 @@ export const PracticeSessionPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowHint((h) => !h)}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-700 hover:underline"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-100 hover:bg-accent-200 border border-accent-200 text-xs font-bold text-accent-800 transition-colors"
                 >
                   <Lightbulb className="w-4 h-4 text-accent-700" aria-hidden="true" />
                   <span>
@@ -444,15 +468,19 @@ export const PracticeSessionPage: React.FC = () => {
                   </span>
                 </button>
                 {showHint && (
-                  <div className="mt-2 p-3 rounded-control bg-accent-100/70 border border-accent-200 text-xs sm:text-sm text-ink-900">
+                  <div className="mt-2.5 p-3.5 rounded-card bg-surface-cream border border-accent-200 text-xs sm:text-sm text-ink-900 leading-relaxed motion-feedback">
                     {bi(lang, currentQuestion.hintFa, currentQuestion.hintEn)}
                   </div>
                 )}
               </div>
 
-              {/* Answer Controls */}
+              {/* Answer Controls — Single-column on mobile, 2-col on tablet/desktop */}
               {currentQuestion.type === 'multiple_choice' && currentQuestion.options ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="group" aria-label="Options">
+                <div
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+                  role="group"
+                  aria-label="Options"
+                >
                   {currentQuestion.options.map((opt, idx) => {
                     let fbState: 'correct' | 'wrong_selected' | 'idle' = 'idle';
                     if (feedback?.submitted) {
@@ -495,7 +523,7 @@ export const PracticeSessionPage: React.FC = () => {
               {emptyError && (
                 <div
                   role="alert"
-                  className="p-3 rounded-control bg-warning-100 border border-warning-600/40 text-warning-600 text-sm flex items-center gap-2"
+                  className="p-3.5 rounded-control bg-orange-100 border border-orange-200 text-orange-700 text-sm font-semibold flex items-center gap-2"
                 >
                   <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
                   <span>
@@ -508,16 +536,16 @@ export const PracticeSessionPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Simulated Network Error State (Preserves student's input!) */}
+              {/* Simulated Network Error State */}
               {networkError && (
                 <div
                   role="alert"
-                  className="p-4 rounded-card bg-danger-100/70 border border-danger-600/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  className="p-4 rounded-card bg-surface-coral border-2 border-coral-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                 >
                   <div className="flex items-start gap-2.5 text-sm text-ink-900">
-                    <CloudOff className="w-5 h-5 text-danger-600 shrink-0 mt-0.5" />
+                    <CloudOff className="w-5 h-5 text-coral-600 shrink-0 mt-0.5" />
                     <div>
-                      <strong className="block text-danger-600">
+                      <strong className="block text-coral-700">
                         {bi(
                           lang,
                           'ارسال پاسخ با اختلال اینترنت مواجه شد',
@@ -534,7 +562,7 @@ export const PracticeSessionPage: React.FC = () => {
                     </div>
                   </div>
                   <Button
-                    variant="secondary"
+                    variant="cta"
                     size="sm"
                     onClick={() => handleSubmitAnswer()}
                     icon={<RotateCcw className="w-4 h-4" />}
@@ -544,23 +572,24 @@ export const PracticeSessionPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Primary Submit Action (Hidden once feedback is shown so Continue CTA leads) */}
+              {/* Primary Submit Action — full-width comfortable button on mobile */}
               {!feedback?.submitted && (
-                <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-border">
+                <div className="pt-3 flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-3 border-t border-border">
                   <span className="typo-caption inline-flex items-center gap-1">
-                    <HelpCircle className="w-3.5 h-3.5" aria-hidden="true" />
+                    <HelpCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
                     {bi(
                       lang,
-                      'توجه: فهرست نهایی تمام انواع سؤال در منابع محصول هنوز کامل نشده است.',
-                      'Note: Full inventory of supported question types is pending final specification.'
+                      'فهرست نهایی تمام انواع سؤال در منابع محصول در حال تکمیل است.',
+                      'Full inventory of question types is pending final specification.'
                     )}
                   </span>
                   <Button
                     type="submit"
-                    variant="primary"
+                    variant="cta"
                     size="lg"
+                    className="w-full sm:w-auto"
                     loading={submitting}
-                    icon={<CheckCircle2 className="w-4 h-4" />}
+                    icon={<CheckCircle2 className="w-5 h-5" />}
                   >
                     {submitting
                       ? bi(lang, 'در حال بررسی پاسخ...', 'Checking...')
@@ -570,7 +599,7 @@ export const PracticeSessionPage: React.FC = () => {
               )}
             </form>
 
-            {/* Rich Question Feedback Panel (Section 6.4) */}
+            {/* Rich Question Feedback Panel */}
             {feedback?.submitted && (
               <FeedbackPanel
                 isCorrect={feedback.isCorrect}
@@ -599,19 +628,23 @@ export const PracticeSessionPage: React.FC = () => {
         )}
 
         {/* Footer Breadcrumb Escape */}
-        <div className="mt-4 flex items-center justify-between text-xs text-ink-600">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs font-medium text-ink-600">
           <Link
             to={`/student/topics/${topic.id}`}
-            className="hover:text-brand-700 hover:underline inline-flex items-center gap-1"
+            className="hover:text-brand-800 hover:underline inline-flex items-center gap-1"
           >
             <BackArrow className="w-3.5 h-3.5" />
             <span>
-              {bi(lang, `مشاهده سایر مهارت‌های «${topic.titleFa}»`, `More skills in ${topic.titleEn}`)}
+              {bi(
+                lang,
+                `سایر مهارت‌های «${topic.titleFa}»`,
+                `More skills in ${topic.titleEn}`
+              )}
             </span>
           </Link>
-          <span className="inline-flex items-center gap-1">
-            <Sparkles className="w-3.5 h-3.5 text-accent-700" aria-hidden="true" />
-            {bi(lang, 'محیط تمرین کم‌حواس‌پرتی روشنا', 'Roshana Focused Practice Mode')}
+          <span className="inline-flex items-center gap-1 text-brand-800">
+            <Sparkles className="w-3.5 h-3.5 text-orange-500" aria-hidden="true" />
+            {bi(lang, 'محیط تمرین متمرکز روشنا', 'Roshana Focused Practice Mode')}
           </span>
         </div>
       </div>
@@ -626,7 +659,7 @@ export const PracticeSessionPage: React.FC = () => {
             <Button variant="secondary" onClick={() => setExitModalOpen(false)}>
               {bi(lang, 'ادامه دادن همین تمرین', 'Stay & Continue')}
             </Button>
-            <Button variant="primary" onClick={handleConfirmSafeExit}>
+            <Button variant="cta" onClick={handleConfirmSafeExit}>
               {bi(lang, 'ذخیره و بازگشت به خانه', 'Save & Exit to Home')}
             </Button>
           </>

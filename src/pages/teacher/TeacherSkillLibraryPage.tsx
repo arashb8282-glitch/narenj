@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
+  BookOpen,
   CheckSquare,
   Eye,
   FileQuestion,
@@ -25,6 +26,7 @@ import {
 import { QUESTION_BANK, TOPICS } from '../../data/mockData';
 import { Skill } from '../../data/types';
 import { bi, fmtNum } from '../../utils/format';
+import { getTopicTheme } from '../../utils/theme';
 
 export const TeacherSkillLibraryPage: React.FC = () => {
   const {
@@ -82,6 +84,7 @@ export const TeacherSkillLibraryPage: React.FC = () => {
     <AppShell roleOverride="teacher">
       <PageHeader
         lang={lang}
+        icon={<BookOpen className="w-6 h-6" />}
         breadcrumbs={[
           { label: bi(lang, 'خانه معلم', 'Teacher Home'), to: '/teacher' },
           { label: bi(lang, 'کتابخانه مهارت‌ها (معلم)', 'Skill Library (Teacher)') },
@@ -89,21 +92,21 @@ export const TeacherSkillLibraryPage: React.FC = () => {
         title={bi(lang, 'کتابخانه مهارت‌ها و بانک محتوای استاندارد', 'Teacher Skill Library')}
         subtitle={bi(
           lang,
-          'مرور مهارت‌ها، مشاهده نمونه سؤال‌های استاندارد و انتخاب چند مهارت برای ایجاد تکلیف یا ساخت آزمون.',
-          'Browse curriculum skills, inspect sample questions, and multi-select skills for Assignments or Quizzes.'
+          'مرور مهارت‌های رنگ‌بندی‌شده، مشاهده نمونه سؤال‌های استاندارد و انتخاب چند مهارت برای ایجاد تکلیف یا آزمون.',
+          'Browse color-coded curriculum skills, inspect sample questions, and multi-select skills for Assignments or Quizzes.'
         )}
         badge={
-          <Badge tone="brand" icon={<Users className="w-3.5 h-3.5" />}>
-            {bi(lang, `زمینه کلاس فعال: ${activeClass.nameFa}`, `Context: ${activeClass.nameEn}`)}
+          <Badge tone="turquoise" icon={<Users className="w-3.5 h-3.5" />}>
+            {bi(lang, `کلاس فعال: ${activeClass.nameFa}`, `Context: ${activeClass.nameEn}`)}
           </Badge>
         }
       />
 
       {/* Product Rule Guardrail Banner: Read-Only Content Bank */}
-      <div className="mb-5 p-3.5 rounded-card bg-brand-50 border border-brand-200 flex items-start gap-2.5 text-xs sm:text-sm text-ink-900">
-        <Info className="w-5 h-5 text-brand-700 shrink-0 mt-0.5" aria-hidden="true" />
+      <div className="mb-5 p-4 rounded-card bg-surface-sky border border-turquoise-200 flex items-start gap-3 text-xs sm:text-sm text-ink-900">
+        <Info className="w-5 h-5 text-turquoise-700 shrink-0 mt-0.5" aria-hidden="true" />
         <div>
-          <strong className="text-brand-700">
+          <strong className="text-brand-900">
             {bi(lang, 'قانون قطعی محتوا در MVP: ', 'Confirmed MVP Content Rule: ')}
           </strong>
           {bi(
@@ -115,8 +118,8 @@ export const TeacherSkillLibraryPage: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <Card padding="sm" className="mb-5">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+      <Card padding="md" accentTop="turquoise" className="mb-5">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-end">
           <div className="md:col-span-6">
             <SearchInput
               id="tch-skill-search"
@@ -125,7 +128,7 @@ export const TeacherSkillLibraryPage: React.FC = () => {
               onChange={setSearchQuery}
               placeholder={bi(
                 lang,
-                'جست‌وجوی عنوان مهارت یا کد استاندارد (مثلاً: جمع کسرها، M6-FR-02)...',
+                'عنوان مهارت یا کد استاندارد (مثلاً: جمع کسرها، M6-FR-02)...',
                 'Search skill title or code...'
               )}
             />
@@ -169,8 +172,8 @@ export const TeacherSkillLibraryPage: React.FC = () => {
 
       {/* Multi-Select Tray */}
       {teacherSelectedSkillIds.length > 0 && (
-        <div className="mb-5 p-4 rounded-card bg-brand-700 text-white flex flex-wrap items-center justify-between gap-3">
-          <div className="text-sm font-semibold">
+        <div className="mb-5 p-4 rounded-card bg-brand-900 text-white flex flex-wrap items-center justify-between gap-3 shadow-card">
+          <div className="text-sm font-bold">
             {lang === 'fa'
               ? `${fmtNum(teacherSelectedSkillIds.length, 'fa')} مهارت برای «${activeClass.nameFa}» انتخاب شده است.`
               : `${teacherSelectedSkillIds.length} skill(s) selected for ${activeClass.nameEn}.`}
@@ -188,12 +191,12 @@ export const TeacherSkillLibraryPage: React.FC = () => {
               variant="secondary"
               size="sm"
               onClick={() => navigate('/teacher/quiz-generator')}
-              icon={<FileQuestion className="w-4 h-4 text-brand-700" />}
+              icon={<FileQuestion className="w-4 h-4 text-brand-800" />}
             >
               {bi(lang, 'ارسال به آزمون‌ساز', 'Send to Quiz Generator')}
             </Button>
             <Button
-              variant="accent"
+              variant="cta"
               size="sm"
               onClick={handleCreateAssignmentFromSelection}
               icon={<CheckSquare className="w-4 h-4" />}
@@ -216,7 +219,7 @@ export const TeacherSkillLibraryPage: React.FC = () => {
           )}
           action={
             <Button
-              variant="secondary"
+              variant="cta"
               onClick={() => {
                 setSearchQuery('');
                 setGradeFilter('all');
@@ -231,34 +234,35 @@ export const TeacherSkillLibraryPage: React.FC = () => {
         <div className="space-y-3">
           {filteredSkills.map((sk) => {
             const top = TOPICS.find((t) => t.id === sk.topicId);
+            const theme = getTopicTheme(sk.topicId);
             const isSelected = teacherSelectedSkillIds.includes(sk.id);
             return (
               <Card
                 key={sk.id}
                 padding="md"
-                className={`transition-colors ${
-                  isSelected ? 'border-2 border-brand-700 bg-brand-50/50' : ''
-                }`}
+                surfaceTone={isSelected ? 'sky' : 'white'}
+                accentTop={isSelected ? 'turquoise' : theme.accentTop}
+                className={isSelected ? 'ring-2 ring-turquoise-500/40' : ''}
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="flex items-start gap-3.5 flex-1">
+                  <div className="flex items-start gap-3.5 flex-1 min-w-0">
                     <input
                       type="checkbox"
                       id={`chk-${sk.id}`}
                       checked={isSelected}
                       onChange={() => toggleTeacherSelectedSkill(sk.id)}
-                      className="mt-1.5 w-4 h-4 rounded border-border text-brand-700 cursor-pointer"
+                      className="mt-1.5 w-4 h-4 rounded border-border text-brand-700 cursor-pointer shrink-0"
                     />
-                    <div className="space-y-1">
+                    <div className="space-y-1.5 min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="ltr-token text-xs font-semibold px-2 py-0.5 rounded bg-canvas border border-border text-ink-600">
+                        <span className={`ltr-token text-xs font-bold px-2.5 py-0.5 rounded-full ${theme.chipClass}`}>
                           {sk.code}
                         </span>
                         <Badge tone="neutral">
                           {bi(lang, `پایه ${fmtNum(sk.grade, 'fa')}`, `Grade ${sk.grade}`)}
                         </Badge>
                         {top && (
-                          <span className="typo-caption">
+                          <span className="typo-caption font-semibold">
                             {bi(lang, top.titleFa, top.titleEn)}
                           </span>
                         )}
@@ -269,7 +273,9 @@ export const TeacherSkillLibraryPage: React.FC = () => {
                       >
                         {bi(lang, sk.titleFa, sk.titleEn)}
                       </label>
-                      <p className="typo-caption">{bi(lang, sk.descriptionFa, sk.descriptionEn)}</p>
+                      <p className="typo-caption">
+                        {bi(lang, sk.descriptionFa, sk.descriptionEn)}
+                      </p>
                     </div>
                   </div>
 
@@ -280,10 +286,10 @@ export const TeacherSkillLibraryPage: React.FC = () => {
                       onClick={() => setPreviewSkill(sk)}
                       icon={<Eye className="w-4 h-4" />}
                     >
-                      {bi(lang, 'مشاهده نمونه سؤال‌ها', 'Inspect Sample Questions')}
+                      {bi(lang, 'نمونه سؤال‌ها', 'Sample Questions')}
                     </Button>
                     <Button
-                      variant={isSelected ? 'primary' : 'ghost'}
+                      variant={isSelected ? 'turquoise' : 'primary'}
                       size="sm"
                       onClick={() => toggleTeacherSelectedSkill(sk.id)}
                     >
@@ -320,7 +326,7 @@ export const TeacherSkillLibraryPage: React.FC = () => {
                 {bi(lang, 'بستن پیش‌نمایش', 'Close')}
               </Button>
               <Button
-                variant="primary"
+                variant="cta"
                 onClick={() => {
                   if (!teacherSelectedSkillIds.includes(previewSkill.id)) {
                     toggleTeacherSelectedSkill(previewSkill.id);
@@ -336,9 +342,9 @@ export const TeacherSkillLibraryPage: React.FC = () => {
       >
         {previewSkill && (
           <div className="space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-control bg-canvas border border-border text-xs text-ink-600">
-              <span className="inline-flex items-center gap-1.5 font-semibold text-ink-900">
-                <Lock className="w-3.5 h-3.5 text-brand-700" />
+            <div className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-control bg-surface-sky border border-turquoise-200 text-xs text-ink-800">
+              <span className="inline-flex items-center gap-1.5 font-bold text-brand-900">
+                <Lock className="w-3.5 h-3.5 text-turquoise-700" />
                 {bi(
                   lang,
                   'حالت فقط مشاهده (Read-only) — ویرایش یا افزودن سؤال در MVP وجود ندارد.',
@@ -349,14 +355,14 @@ export const TeacherSkillLibraryPage: React.FC = () => {
             </div>
 
             {sampleQuestions.map((q, idx) => (
-              <Card key={q.id} padding="sm" className="space-y-3">
+              <Card key={q.id} padding="md" surfaceTone="white" className="space-y-3">
                 <div className="flex items-center justify-between text-xs text-ink-600">
-                  <span className="font-semibold text-brand-700">
+                  <span className="font-bold text-brand-800">
                     {bi(lang, `نمونه سؤال ${fmtNum(idx + 1, 'fa')}`, `Sample Question ${idx + 1}`)}
                   </span>
-                  <Badge tone="neutral">{q.difficulty}</Badge>
+                  <Badge tone="lavender">{q.difficulty}</Badge>
                 </div>
-                <p className="text-sm font-semibold text-ink-900">
+                <p className="text-sm font-bold text-ink-900">
                   {bi(lang, q.promptFa, q.promptEn)}
                 </p>
                 <QuestionVisualDiagram
@@ -366,24 +372,26 @@ export const TeacherSkillLibraryPage: React.FC = () => {
                   heightCm={q.visualMeta?.heightCm}
                 />
                 {q.options && (
-                  <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                     {q.options.map((opt) => (
                       <div
                         key={opt.id}
-                        className={`p-2 rounded border ${
+                        className={`p-2.5 rounded-control border ${
                           opt.id === q.correctAnswer
-                            ? 'bg-success-100 border-success-600 font-semibold text-success-600'
+                            ? 'bg-success-100 border-success-600 font-bold text-success-700'
                             : 'bg-canvas border-border text-ink-900'
                         }`}
                       >
                         {bi(lang, opt.labelFa, opt.labelEn)}
-                        {opt.id === q.correctAnswer && bi(lang, ' (پاسخ صحیح)', ' (Correct)')}
+                        {opt.id === q.correctAnswer && bi(lang, ' ✓ (پاسخ صحیح)', ' ✓ (Correct)')}
                       </div>
                     ))}
                   </div>
                 )}
-                <div className="text-xs text-ink-600 bg-canvas p-2.5 rounded border border-border">
-                  <strong className="text-ink-900">{bi(lang, 'توضیح حل: ', 'Solution: ')}</strong>
+                <div className="text-xs text-ink-800 bg-surface-cream p-3 rounded-control border border-accent-200">
+                  <strong className="text-brand-900">
+                    {bi(lang, 'توضیح حل: ', 'Solution: ')}
+                  </strong>
                   {bi(lang, q.explanationFa, q.explanationEn)}
                 </div>
               </Card>

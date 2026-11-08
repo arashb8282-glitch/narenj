@@ -63,7 +63,6 @@ export const SignInPage: React.FC = () => {
         return;
       }
 
-      // Role detection happens automatically post-authentication (no role picker in sign-in!)
       if (clean.includes('ahmadi') || clean.includes('teacher') || clean.startsWith('t.')) {
         setActiveRole('teacher');
         showToast(
@@ -81,7 +80,7 @@ export const SignInPage: React.FC = () => {
         );
         navigate('/student');
       }
-    }, 550);
+    }, 520);
   };
 
   const handleJoinClassCheck = (e: React.FormEvent) => {
@@ -92,19 +91,19 @@ export const SignInPage: React.FC = () => {
 
   return (
     <AppShell roleOverride="minimal">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          {/* Brand & Visual Panel */}
-          <div className="lg:col-span-6 bg-surface rounded-cardLg border border-border p-6 sm:p-8 flex flex-col justify-between">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-stretch">
+          {/* Colorful Brand & Visual Panel */}
+          <div className="lg:col-span-6 rounded-cardLg bg-gradient-to-br from-brand-900 via-brand-800 to-turquoise-700 text-white p-6 sm:p-8 flex flex-col justify-between shadow-card">
             <div className="space-y-4">
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-3">
-                  <RoshanaBrandMark size={44} />
+                  <RoshanaBrandMark size={44} inverted />
                   <div>
-                    <span className="text-xl font-bold text-brand-700 block">
+                    <span className="text-xl font-bold text-white block">
                       {bi(lang, 'روشنا', 'Roshana')}
                     </span>
-                    <span className="typo-caption">
+                    <span className="text-xs text-turquoise-200 font-medium">
                       {bi(
                         lang,
                         'پلتفرم یادگیری و تمرین هدفمند مهارت‌ها',
@@ -113,17 +112,19 @@ export const SignInPage: React.FC = () => {
                     </span>
                   </div>
                 </div>
-                <DemoBadge lang={lang} />
+                <span className="px-2.5 py-0.5 rounded-full bg-accent-500 text-ink-900 text-[11px] font-bold">
+                  DEMO DATA
+                </span>
               </div>
 
-              <h1 className="typo-page-title pt-2">
+              <h1 className="text-2xl sm:text-[1.85rem] font-bold text-white leading-tight pt-2">
                 {bi(
                   lang,
-                  'هر روز یک مهارت تازه را با اطمینان یاد بگیر',
+                  'هر روز یک مهارت تازه را با اطمینان و انگیزه یاد بگیر',
                   'Master one skill at a time with clarity and confidence'
                 )}
               </h1>
-              <p className="typo-body text-ink-600">
+              <p className="text-sm sm:text-base text-white/85 leading-relaxed">
                 {bi(
                   lang,
                   'پس از ورود با حساب مدرسه، سامانه به‌صورت خودکار شما را به صفحه ویژه دانش‌آموز یا معلم هدایت می‌کند. ثبت‌نام عمومی آزاد در نسخه MVP وجود ندارد.',
@@ -136,23 +137,23 @@ export const SignInPage: React.FC = () => {
               <StudentHeroIllustration />
             </div>
 
-            {/* Separate Class Code Path (Section 6.1 requirement) */}
-            <div className="rounded-card bg-brand-50 border border-brand-200 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            {/* Separate Class Code Path */}
+            <div className="rounded-card bg-white/12 border border-white/20 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <div className="text-sm font-semibold text-brand-700 flex items-center gap-1.5">
-                  <Users className="w-4 h-4" aria-hidden="true" />
+                <div className="text-sm font-bold text-accent-200 flex items-center gap-1.5">
+                  <Users className="w-4 h-4 text-accent-500" aria-hidden="true" />
                   <span>{bi(lang, 'کد کلاس دارید؟', 'Have a Class Code?')}</span>
                 </div>
-                <p className="text-xs text-ink-600 mt-0.5">
+                <p className="text-xs text-white/80 mt-0.5">
                   {bi(
                     lang,
-                    'مسیر پیوستن به کلاس مستقل از فرم ورود اصلی است (جزئیات سیاستی در حال نهایی‌سازی).',
+                    'مسیر پیوستن به کلاس مستقل از فرم ورود اصلی است.',
                     'Joining a class via Class Code is separate from primary sign-in.'
                   )}
                 </p>
               </div>
               <Button
-                variant="secondary"
+                variant="accent"
                 size="sm"
                 onClick={() => {
                   setJoinSuccess(false);
@@ -166,7 +167,7 @@ export const SignInPage: React.FC = () => {
 
           {/* Sign-In Form + Prototype Evaluator Quick-Fill */}
           <div className="lg:col-span-6 flex flex-col gap-5 justify-between">
-            <Card padding="lg">
+            <Card padding="lg" accentTop="orange" className="shadow-card">
               <div className="mb-5">
                 <h2 className="typo-section-title">
                   {bi(lang, 'ورود به حساب کاربری مدرسه', 'Sign in with School Account')}
@@ -183,7 +184,7 @@ export const SignInPage: React.FC = () => {
               {errorMsg && (
                 <div
                   role="alert"
-                  className="mb-4 p-3.5 rounded-control bg-danger-100 border border-danger-600/40 text-danger-600 text-sm flex items-start gap-2.5"
+                  className="mb-4 p-3.5 rounded-control bg-coral-100 border border-coral-200 text-coral-700 text-sm font-semibold flex items-start gap-2.5"
                 >
                   <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />
                   <span>{errorMsg}</span>
@@ -194,13 +195,13 @@ export const SignInPage: React.FC = () => {
                 <div>
                   <label
                     htmlFor="signin-username"
-                    className="block text-sm font-semibold text-ink-900 mb-1.5"
+                    className="block text-sm font-bold text-ink-900 mb-1.5"
                   >
                     {bi(lang, 'نام کاربری', 'Username')}
                   </label>
                   <div className="relative">
                     <User
-                      className="w-4 h-4 text-ink-600 absolute top-1/2 -translate-y-1/2 start-3.5"
+                      className="w-4 h-4 text-brand-700 absolute top-1/2 -translate-y-1/2 start-3.5"
                       aria-hidden="true"
                     />
                     <input
@@ -211,23 +212,23 @@ export const SignInPage: React.FC = () => {
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       placeholder="ava.rezaei"
-                      className="w-full min-h-[44px] ps-10 pe-3.5 py-2 bg-surface border border-border rounded-control text-sm text-ink-900 focus:border-brand-600 focus:outline-none ltr-token"
+                      className="w-full min-h-[46px] ps-10 pe-3.5 py-2 bg-surface border border-border-strong rounded-control text-sm text-ink-900 focus:border-turquoise-500 focus:outline-none ltr-token"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex flex-wrap items-center justify-between gap-1 mb-1.5">
                     <label
                       htmlFor="signin-password"
-                      className="text-sm font-semibold text-ink-900"
+                      className="text-sm font-bold text-ink-900"
                     >
                       {bi(lang, 'رمز عبور', 'Password')}
                     </label>
                     <button
                       type="button"
                       onClick={() => setRecoveryOpen(true)}
-                      className="text-xs font-semibold text-brand-600 hover:text-brand-700 hover:underline inline-flex items-center gap-1"
+                      className="text-xs font-bold text-brand-700 hover:text-brand-900 hover:underline inline-flex items-center gap-1"
                     >
                       <HelpCircle className="w-3.5 h-3.5" aria-hidden="true" />
                       <span>
@@ -237,7 +238,7 @@ export const SignInPage: React.FC = () => {
                   </div>
                   <div className="relative">
                     <Lock
-                      className="w-4 h-4 text-ink-600 absolute top-1/2 -translate-y-1/2 start-3.5"
+                      className="w-4 h-4 text-brand-700 absolute top-1/2 -translate-y-1/2 start-3.5"
                       aria-hidden="true"
                     />
                     <input
@@ -247,7 +248,7 @@ export const SignInPage: React.FC = () => {
                       autoComplete="current-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full min-h-[44px] ps-10 pe-11 py-2 bg-surface border border-border rounded-control text-sm text-ink-900 focus:border-brand-600 focus:outline-none ltr-token"
+                      className="w-full min-h-[46px] ps-10 pe-11 py-2 bg-surface border border-border-strong rounded-control text-sm text-ink-900 focus:border-turquoise-500 focus:outline-none ltr-token"
                     />
                     <button
                       type="button"
@@ -266,7 +267,7 @@ export const SignInPage: React.FC = () => {
 
                 <Button
                   type="submit"
-                  variant="primary"
+                  variant="cta"
                   size="lg"
                   loading={loading}
                   className="w-full mt-2"
@@ -277,29 +278,29 @@ export const SignInPage: React.FC = () => {
               </form>
             </Card>
 
-            {/* Prototype-Only Helper Card — explicitly separated from real product form */}
-            <Card padding="md" className="bg-canvas border-dashed border-2 border-border">
-              <div className="flex items-center justify-between gap-2 mb-2.5">
-                <span className="text-xs font-bold text-ink-900 inline-flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-accent-700" aria-hidden="true" />
+            {/* Prototype-Only Helper Card */}
+            <Card padding="md" surfaceTone="lavender" accentTop="lavender">
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <span className="text-xs font-bold text-lavender-700 inline-flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-lavender-600" aria-hidden="true" />
                   {bi(
                     lang,
                     'میان‌بر تست پروتوتایپ (خارج از فرم واقعی محصول)',
                     'Prototype Quick-Fill Helper (For UX Review Only)'
                   )}
                 </span>
-                <Badge tone="accent">DEMO</Badge>
+                <Badge tone="lavender">DEMO</Badge>
               </div>
-              <p className="text-xs text-ink-600 mb-3">
+              <p className="text-xs text-ink-600 mb-3 leading-relaxed">
                 {bi(
                   lang,
-                  'در محصول واقعی کاربر نقش انتخاب نمی‌کند و نقش از حساب کاربری تشخیص داده می‌شود. برای تست سریع روی یکی از حساب‌های نمونه زیر کلیک کنید:',
+                  'در محصول واقعی کاربر نقش انتخاب نمی‌کند و نقش از حساب کاربری تشخیص داده می‌شود. برای تست سریع یکی از حساب‌های زیر را انتخاب کنید:',
                   'In production, role is inferred from credentials. Click a preset below to test auto-routing or error handling:'
                 )}
               </p>
               <div className="flex flex-wrap gap-2">
                 <Button
-                  variant="secondary"
+                  variant="turquoise"
                   size="sm"
                   onClick={() => {
                     setUsername('ava.rezaei');
@@ -307,7 +308,7 @@ export const SignInPage: React.FC = () => {
                     setErrorMsg(null);
                   }}
                 >
-                  {bi(lang, 'حساب دانش‌آموز (ava.rezaei)', 'Student (ava.rezaei)')}
+                  {bi(lang, 'دانش‌آموز (ava.rezaei)', 'Student (ava.rezaei)')}
                 </Button>
                 <Button
                   variant="secondary"
@@ -318,7 +319,7 @@ export const SignInPage: React.FC = () => {
                     setErrorMsg(null);
                   }}
                 >
-                  {bi(lang, 'حساب معلم (m.ahmadi)', 'Teacher (m.ahmadi)')}
+                  {bi(lang, 'معلم (m.ahmadi)', 'Teacher (m.ahmadi)')}
                 </Button>
                 <Button
                   variant="ghost"
@@ -329,7 +330,7 @@ export const SignInPage: React.FC = () => {
                     setErrorMsg(null);
                   }}
                 >
-                  {bi(lang, 'شبیه‌سازی خطای رمز', 'Test Invalid Login')}
+                  {bi(lang, 'تست خطای رمز', 'Test Invalid Login')}
                 </Button>
               </div>
             </Card>
@@ -337,13 +338,13 @@ export const SignInPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Password Recovery Modal (Prototype policy notice) */}
+      {/* Password Recovery Modal */}
       <Modal
         open={recoveryOpen}
         onClose={() => setRecoveryOpen(false)}
         title={bi(lang, 'راهنمای بازیابی حساب مدرسه', 'Account Recovery Guide')}
         footer={
-          <Button variant="primary" onClick={() => setRecoveryOpen(false)}>
+          <Button variant="cta" onClick={() => setRecoveryOpen(false)}>
             {bi(lang, 'متوجه شدم', 'Got it')}
           </Button>
         }
@@ -358,11 +359,11 @@ export const SignInPage: React.FC = () => {
           <p className="leading-relaxed">
             {bi(
               lang,
-              'از آنجا که حساب دانش‌آموزان توسط مدرسه صادر می‌شود و ممکن است دانش‌آموزان ۹ تا ۱۵ سال ایمیل یا شماره همراه شخصی نداشته باشند، فرایند دقیق بازنشانی رمز (توسط معلم یا مسئول فناوری مدرسه) در حال تصویب نهایی است.',
+              'از آنجا که حساب دانش‌آموزان توسط مدرسه صادر می‌شود و ممکن است دانش‌آموزان ۹ تا ۱۵ سال ایمیل یا شماره همراه شخصی نداشته باشند، فرایند دقیق بازنشانی رمز در حال تصویب نهایی است.',
               'Because student accounts are school-provisioned and students aged 9–15 may not have personal email/SMS, self-service vs. teacher-assisted password reset policy is currently under review.'
             )}
           </p>
-          <div className="p-3.5 rounded-control bg-brand-50 border border-brand-200 text-xs text-ink-900">
+          <div className="p-3.5 rounded-control bg-surface-sky border border-turquoise-200 text-xs text-ink-900">
             {bi(
               lang,
               'پیشنهاد UX فعلی: دانش‌آموز از معلم کلاس یا مدیر مدرسه درخواست «صدور رمز موقت» می‌کند.',
@@ -372,7 +373,7 @@ export const SignInPage: React.FC = () => {
         </div>
       </Modal>
 
-      {/* Separate Join a Class Modal */}
+      {/* Join a Class Modal */}
       <Modal
         open={joinClassOpen}
         onClose={() => setJoinClassOpen(false)}
@@ -393,12 +394,12 @@ export const SignInPage: React.FC = () => {
           <p className="text-sm text-ink-600 leading-relaxed">
             {bi(
               lang,
-              'کد کلاس توسط معلم در اختیار دانش‌آموز قرار می‌گیرد. اینکه کد کلاس پیش از ورود یا پس از ورود به حساب مدرسه ثبت شود، یکی از تصمیم‌های باز محصول است که در این پروتوتایپ برای ارزیابی قرار داده شده است.',
+              'کد کلاس توسط معلم در اختیار دانش‌آموز قرار می‌گیرد. اینکه کد کلاس پیش از ورود یا پس از ورود به حساب مدرسه ثبت شود، یکی از تصمیم‌های باز محصول است.',
               'Teachers share a Class Code with students. Exact rules for pre-login vs. post-login class joining are still open for product sign-off.'
             )}
           </p>
           <div>
-            <label htmlFor="class-code-input" className="block text-sm font-semibold mb-1.5">
+            <label htmlFor="class-code-input" className="block text-sm font-bold mb-1.5">
               {bi(lang, 'کد کلاس (نمونه: RSH-6A24)', 'Class Code (Sample: RSH-6A24)')}
             </label>
             <input
@@ -410,11 +411,11 @@ export const SignInPage: React.FC = () => {
                 setClassCodeInput(e.target.value.toUpperCase());
                 setJoinSuccess(false);
               }}
-              className="w-full min-h-[44px] px-3.5 py-2 border border-border rounded-control text-center font-bold tracking-wider ltr-token"
+              className="w-full min-h-[46px] px-3.5 py-2 border border-border-strong rounded-control text-center font-bold tracking-wider ltr-token"
             />
           </div>
           {joinSuccess ? (
-            <div className="p-3.5 rounded-control bg-success-100 border border-success-600/40 text-success-600 text-sm flex items-start gap-2">
+            <div className="p-3.5 rounded-control bg-surface-mint border border-success-200 text-success-700 text-sm flex items-start gap-2">
               <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" />
               <div>
                 <strong>
@@ -434,7 +435,7 @@ export const SignInPage: React.FC = () => {
               </div>
             </div>
           ) : (
-            <Button type="submit" variant="primary" className="w-full">
+            <Button type="submit" variant="cta" className="w-full">
               {bi(lang, 'بررسی کد کلاس', 'Verify Class Code')}
             </Button>
           )}

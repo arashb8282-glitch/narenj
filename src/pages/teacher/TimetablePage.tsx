@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, Info, Plus, Users } from 'lucide-react';
+import { CalendarDays, Clock, Info, Plus, Users } from 'lucide-react';
 import { usePrototype } from '../../app/PrototypeContext';
 import { AppShell } from '../../components/shared/AppShell';
 import {
@@ -12,14 +12,14 @@ import {
   PageHeader,
   SelectField,
 } from '../../components/ui/Primitives';
-import { bi } from '../../utils/format';
+import { bi, fmtNum } from '../../utils/format';
 
 const WEEK_DAYS = [
-  { index: 0 as const, fa: 'شنبه', en: 'Saturday' },
-  { index: 1 as const, fa: 'یکشنبه', en: 'Sunday' },
-  { index: 2 as const, fa: 'دوشنبه', en: 'Monday' },
-  { index: 3 as const, fa: 'سه‌شنبه', en: 'Tuesday' },
-  { index: 4 as const, fa: 'چهارشنبه', en: 'Wednesday' },
+  { index: 0 as const, fa: 'شنبه', en: 'Saturday', accent: 'turquoise' as const },
+  { index: 1 as const, fa: 'یکشنبه', en: 'Sunday', accent: 'lavender' as const },
+  { index: 2 as const, fa: 'دوشنبه', en: 'Monday', accent: 'orange' as const },
+  { index: 3 as const, fa: 'سه‌شنبه', en: 'Tuesday', accent: 'success' as const },
+  { index: 4 as const, fa: 'چهارشنبه', en: 'Wednesday', accent: 'accent' as const },
 ];
 
 export const TimetablePage: React.FC = () => {
@@ -63,6 +63,7 @@ export const TimetablePage: React.FC = () => {
     <AppShell roleOverride="teacher">
       <PageHeader
         lang={lang}
+        icon={<CalendarDays className="w-6 h-6" />}
         breadcrumbs={[
           { label: bi(lang, 'خانه معلم', 'Teacher Home'), to: '/teacher' },
           { label: bi(lang, 'برنامه تدریس و تقویم', 'Timetable & Teaching Plan') },
@@ -83,24 +84,28 @@ export const TimetablePage: React.FC = () => {
         }
         actions={
           <Button
-            variant="secondary"
+            variant="cta"
             onClick={() => setAddModalOpen(true)}
             icon={<Plus className="w-4 h-4" />}
           >
-            {bi(lang, 'افزودن آیتم برنامه (نمایشی)', 'Add Plan Note (Demo)')}
+            {bi(lang, 'افزودن یادداشت برنامه (نمایشی)', 'Add Plan Note (Demo)')}
           </Button>
         }
       />
 
       {/* Legend + Filter Strip */}
-      <Card padding="sm" className="mb-5 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-4 text-xs font-semibold">
-          <span className="inline-flex items-center gap-2 text-brand-700">
-            <span className="w-3.5 h-3.5 rounded bg-brand-700 inline-block" />
+      <Card
+        padding="md"
+        surfaceTone="sky"
+        className="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+      >
+        <div className="flex flex-wrap items-center gap-4 text-xs font-bold">
+          <span className="inline-flex items-center gap-2 text-brand-900 bg-surface px-3 py-1.5 rounded-full border border-turquoise-200">
+            <span className="w-3.5 h-3.5 rounded bg-turquoise-500 inline-block" />
             {bi(lang, 'کلاس زمان‌بندی‌شده (جلسه تدریس)', 'Scheduled Class Session')}
           </span>
-          <span className="inline-flex items-center gap-2 text-warning-600">
-            <span className="w-3.5 h-3.5 rounded border-2 border-dashed border-warning-600 bg-accent-100 inline-block" />
+          <span className="inline-flex items-center gap-2 text-orange-700 bg-surface px-3 py-1.5 rounded-full border border-orange-200">
+            <span className="w-3.5 h-3.5 rounded border-2 border-dashed border-orange-500 bg-orange-100 inline-block" />
             {bi(lang, 'موعد تحویل تکلیف یا آزمون', 'Assignment / Quiz Deadline')}
           </span>
         </div>
@@ -109,6 +114,7 @@ export const TimetablePage: React.FC = () => {
           id="tt-class-filter"
           label={bi(lang, 'فیلتر کلاس', 'Filter Class')}
           hideLabel
+          className="sm:min-w-[220px]"
           value={classFilter}
           onChange={(v) => {
             setClassFilter(v);
@@ -124,8 +130,8 @@ export const TimetablePage: React.FC = () => {
         />
       </Card>
 
-      {/* Weekly 5-Day School Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-3.5">
+      {/* Weekly 5-Day School Grid — 1 col on mobile, 2 on tablet, 5 on desktop */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
         {WEEK_DAYS.map((day) => {
           const entries = timetable.filter(
             (e) =>
@@ -134,10 +140,15 @@ export const TimetablePage: React.FC = () => {
           );
 
           return (
-            <Card key={day.index} padding="sm" className="flex flex-col gap-3 min-h-[280px]">
+            <Card
+              key={day.index}
+              padding="sm"
+              accentTop={day.accent}
+              className="flex flex-col gap-3 min-h-[220px] lg:min-h-[300px]"
+            >
               <div className="pb-2.5 border-b border-border flex items-center justify-between">
                 <h2 className="font-bold text-ink-900">{bi(lang, day.fa, day.en)}</h2>
-                <Badge tone="neutral">{entries.length}</Badge>
+                <Badge tone={day.accent}>{fmtNum(entries.length, lang)}</Badge>
               </div>
 
               <div className="space-y-2.5 flex-1">
@@ -148,12 +159,12 @@ export const TimetablePage: React.FC = () => {
                       key={entry.id}
                       className={`p-3 rounded-card text-xs space-y-1.5 ${
                         isClass
-                          ? 'bg-brand-50 border-s-4 border border-brand-700 text-ink-900'
-                          : 'bg-accent-100/65 border-2 border-dashed border-warning-600/60 text-ink-900'
+                          ? 'bg-surface-sky border-s-4 border border-turquoise-500 text-ink-900'
+                          : 'bg-surface-apricot border-2 border-dashed border-orange-500/70 text-ink-900'
                       }`}
                     >
-                      <div className="flex items-center justify-between gap-1 text-[11px] font-semibold">
-                        <span className={isClass ? 'text-brand-700' : 'text-warning-600'}>
+                      <div className="flex items-center justify-between gap-1 text-[11px] font-bold">
+                        <span className={isClass ? 'text-turquoise-700' : 'text-orange-700'}>
                           {isClass ? (
                             <span className="inline-flex items-center gap-1">
                               <Users className="w-3 h-3" />
@@ -169,7 +180,7 @@ export const TimetablePage: React.FC = () => {
                         <span className="text-ink-600">{entry.timeSlot}</span>
                       </div>
 
-                      <div className="font-semibold leading-snug">
+                      <div className="font-bold leading-snug">
                         {bi(lang, entry.titleFa, entry.titleEn)}
                       </div>
 
@@ -177,16 +188,16 @@ export const TimetablePage: React.FC = () => {
                         {isClass ? (
                           <Link
                             to="/teacher/skills"
-                            className="text-[11px] font-semibold text-brand-700 hover:underline"
+                            className="text-[11px] font-bold text-brand-800 hover:underline"
                           >
-                            {bi(lang, 'مشاهده مهارت‌های مبحث', 'Topic Skills')}
+                            {bi(lang, 'مهارت‌های مبحث', 'Topic Skills')}
                           </Link>
                         ) : (
                           <Link
                             to="/teacher/assignments"
-                            className="text-[11px] font-semibold text-warning-600 hover:underline"
+                            className="text-[11px] font-bold text-orange-700 hover:underline"
                           >
-                            {bi(lang, 'مشاهده جزئیات تکلیف', 'View Task')}
+                            {bi(lang, 'جزئیات تکلیف', 'View Task')}
                           </Link>
                         )}
                       </div>
@@ -199,7 +210,7 @@ export const TimetablePage: React.FC = () => {
         })}
       </div>
 
-      {/* Demo Edit Modal with Explicit Open-Permission Notice */}
+      {/* Demo Edit Modal */}
       <Modal
         open={addModalOpen}
         onClose={() => setAddModalOpen(false)}
@@ -209,15 +220,15 @@ export const TimetablePage: React.FC = () => {
             <Button variant="secondary" onClick={() => setAddModalOpen(false)}>
               {bi(lang, 'انصراف', 'Cancel')}
             </Button>
-            <Button variant="primary" onClick={handleAddDemoPlan}>
+            <Button variant="cta" onClick={handleAddDemoPlan}>
               {bi(lang, 'افزودن نمایشی به تقویم', 'Add Demo Entry')}
             </Button>
           </>
         }
       >
         <form onSubmit={handleAddDemoPlan} className="space-y-4">
-          <div className="p-3 rounded-control bg-brand-50 border border-brand-200 text-xs text-ink-900 flex items-start gap-2">
-            <Info className="w-4 h-4 text-brand-700 shrink-0 mt-0.5" />
+          <div className="p-3 rounded-control bg-surface-sky border border-turquoise-200 text-xs text-ink-900 flex items-start gap-2">
+            <Info className="w-4 h-4 text-turquoise-700 shrink-0 mt-0.5" />
             <span>
               {bi(
                 lang,
@@ -247,7 +258,7 @@ export const TimetablePage: React.FC = () => {
               type="text"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              className="w-full min-h-[42px] px-3 py-2 border border-border rounded-control text-sm"
+              className="w-full min-h-[44px] px-3 py-2 border border-border-strong rounded-control text-sm"
             />
           </div>
         </form>
