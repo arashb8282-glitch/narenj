@@ -40,9 +40,12 @@ const RouteEffects: React.FC = () => {
 
 const useHashMode =
   typeof window !== 'undefined' &&
-  (window.location.protocol === 'file:' ||
-    window.location.hostname.endsWith('github.io') ||
-    window.location.pathname.endsWith('.html'));
+  Boolean(
+    (window as unknown as { __ROSHANA_STANDALONE__?: boolean }).__ROSHANA_STANDALONE__ ||
+      window.location.protocol === 'file:' ||
+      window.location.hostname.endsWith('github.io') ||
+      window.location.pathname.endsWith('.html')
+  );
 
 const RouterComponent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   if (useHashMode) {

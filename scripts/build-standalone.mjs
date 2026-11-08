@@ -62,6 +62,7 @@ const html = `<!doctype html>
   </head>
   <body class="bg-canvas text-ink-900 antialiased selection:bg-brand-100 selection:text-brand-700">
     <div id="root"></div>
+    <script>window.__ROSHANA_STANDALONE__ = true;</script>
     <script type="module">${safeJs}</script>
   </body>
 </html>
